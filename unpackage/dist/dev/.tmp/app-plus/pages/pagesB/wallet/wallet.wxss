@@ -24,13 +24,14 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.content.data-v-47931d98 {
+page {
   background-color: #fff;
+}
+.content {
   font-size: 24rpx;
   color: #333;
-  height: 1334rpx;
 }
-.content .top.data-v-47931d98 {
+.content .top {
     height: 318rpx;
     font-size: 30rpx;
     margin-top: 20rpx;
@@ -38,20 +39,20 @@
     -webkit-box-sizing: border-box;
             box-sizing: border-box;
 }
-.content .list-item.data-v-47931d98 {
+.content .list-item {
     height: 134rpx;
 }
-.content .list-item .img.data-v-47931d98 {
+.content .list-item .img {
       height: 72rpx;
       width: 72rpx;
       border-radius: 50%;
       overflow: hidden;
       margin-right: 20rpx;
 }
-.content .title.data-v-47931d98 {
+.content .title {
     height: 100rpx;
 }
-.content .rule.data-v-47931d98 {
+.content .rule {
     height: 140rpx;
 }
 

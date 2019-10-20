@@ -1,5 +1,8 @@
 <template>
 	<view class="content">
+		<view class="bgbox">
+
+		</view>
 		<view class="text-center top">
 			<view class="">
 				<view class="">
@@ -8,7 +11,7 @@
 			</view>
 			<view class="">
 				<view class="font-big font-bold margin-top">
-					00000.0000
+					{{money}}
 				</view>
 			</view>
 			<view class="flex-between margin-top padding">
@@ -38,7 +41,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<view class="bgbox">
 
 		</view>
@@ -46,17 +49,17 @@
 			<text class="font-bold">我的资产</text> <text class="iconfont">&#xea25;</text>
 		</view>
 		<view class="padding">
-			<view class="list-item border-bottom flex-between flex">
+			<view class="list-item border-bottom flex-between flex" v-for="item in coinList" :key="item.id">
 				<view class="flex-row flex">
 					<view class="">
-						<image class="img" src="../../../static/images/BTC@2x.png" mode=""></image>
+						<image class="img" :src="item.Logo" mode=""></image>
 					</view>
 					<view class="">
 						<view class="">
-							BTC
+							{{item.EnName}}
 						</view>
 						<view class="">
-							0.000
+							{{item.Money}}
 						</view>
 					</view>
 				</view>
@@ -66,7 +69,7 @@
 							冻结
 						</view>
 						<view class="">
-							0.000
+							{{item.Forzen}}
 						</view>
 					</view>
 				</view>
@@ -76,60 +79,136 @@
 							折合(CNY)
 						</view>
 						<view class="">
-							0.000
+							{{item.Money*item.Price}}
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
-		
+
 	</view>
 </template>
 
 <script>
 	export default {
-		components: {
-
-		},
 		data() {
 			return {
-				showPinMask:true,
-				
+				money: '',
+				coinList: [],
+				balanceList: []
 			};
 		},
 
 		onLoad(options) {
+			//产品详情
+			uni.request({
+				url: this.baseUrl + "/total-balance",
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (this.$base._indexOf(res.data.status)) {
+						this.$base._isLogin()
+					} else if (res.data.status == 1) {
+						this.money = res.data.data, 4
 
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+
+				}
+			})
+			// //我的资产列表
+			uni.request({
+				url: this.baseUrl + "/coin-list",
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (res.data.status == 1) {
+						this.coinList = res.data.data
+
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+
+				}
+			})
+			//获取币种余额
+			uni.request({
+				url: this.baseUrl + "/coin-balance",
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (res.data.status == 1) {
+						this.balanceList = res.data.data
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+
+				}
+			})
 		},
 		onPullDownRefresh() {
 
 		},
 		methods: {
-		
-			
+			set_balance() {
+				var self = this;
+				for (var i = 0; i < this.coinList.length; i++) {
+					for (var j = 0; j < this.balanceList.length; j++) {
+						if (this.coinList[i].Id == this.balanceList[j].CoinId) {
+							this.coinList[i].Money = this.balanceList[j].Money;
+							this.coinList[i].Forzen = this.balanceList[j].Forzen;
+							this.coinList[i].Price = this.balanceList[j].Price * this.typeInfo2[j].Money;
+						}
+
+					};
+				};
+				this.coinList = JSON.parse(JSON.stringify(this.coinList))
+				
+			}
+
 		}
 	}
 </script>
 
-<style scoped lang="scss">
-	
+<style lang="scss">
+	page {
+		background-color: #fff;
+	}
 
 	.content {
-		background-color: #fff;
+
 		font-size: 24rpx;
 		color: #333;
-		height: 1334rpx;
+
 		.top {
 			height: 318rpx;
 			font-size: 30rpx;
 			margin-top: 20rpx;
 			padding: 40rpx 20rpx;
 			box-sizing: border-box;
-			
+
 		}
-		.list-item{
+
+		.list-item {
 			height: 134rpx;
-			.img{
+
+			.img {
 				height: 72rpx;
 				width: 72rpx;
 				border-radius: 50%;
@@ -137,12 +216,14 @@
 				margin-right: 20rpx;
 			}
 		}
-		.title{
+
+		.title {
 			height: 100rpx;
 		}
-		.rule{
+
+		.rule {
 			height: 140rpx;
 		}
-		
+
 	}
 </style>

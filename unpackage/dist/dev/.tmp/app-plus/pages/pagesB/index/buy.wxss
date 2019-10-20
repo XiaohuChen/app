@@ -24,17 +24,14 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.bgbox.data-v-15e037ae {
-  background-color: #F8F8F8;
-  height: 20rpx;
-}
-.content.data-v-15e037ae {
+page {
   background-color: #fff;
+}
+.content {
   font-size: 24rpx;
   color: #333;
-  height: 1334rpx;
 }
-.content .recommend-product.data-v-15e037ae {
+.content .recommend-product {
     position: relative;
     margin: 20rpx 0;
     height: 262rpx;
@@ -42,21 +39,21 @@
     text-align: center;
     line-height: 60rpx;
 }
-.content .recommend-product .percent.data-v-15e037ae {
+.content .recommend-product .percent {
       margin-top: 20rpx;
       font-size: 58rpx;
       color: #FF3400;
       font-weight: bold;
 }
-.content .recommend-product .title.data-v-15e037ae {
+.content .recommend-product .title {
       padding-top: 30rpx;
       font-weight: bold;
       font-size: 30rpx;
 }
-.content .recommend-product .profit.data-v-15e037ae {
+.content .recommend-product .profit {
       font-size: 24rpx;
 }
-.content .recommend-product .hot.data-v-15e037ae {
+.content .recommend-product .hot {
       position: absolute;
       top: 20rpx;
       right: 20rpx;
@@ -72,11 +69,11 @@
       text-align: center;
       line-height: 34rpx;
 }
-.content .rule.data-v-15e037ae {
+.content .rule {
     height: 100rpx;
     line-height: 100rpx;
 }
-.content .rule .ruled-detail.data-v-15e037ae {
+.content .rule .ruled-detail {
       display: inline-block;
       word-wrap: break-word;
       width: 280rpx;
@@ -84,20 +81,21 @@
       line-height: 40rpx;
       text-align: center;
 }
-.content .rule .width100.data-v-15e037ae {
+.content .rule .width100 {
       width: 150rpx;
 }
-.content .book.data-v-15e037ae {
+.content .book {
     line-height: 60rpx;
 }
-.content .input-num.data-v-15e037ae {
+.content .input-num {
     height: 100rpx;
     background-color: #F8F8F8;
     font-size: 58rpx;
     font-weight: bold;
+    text-align: center;
 }
 /*弹窗样式*/
-.prompt-box.data-v-15e037ae {
+.prompt-box {
   position: absolute;
   left: 0;
   top: 0;
@@ -106,7 +104,7 @@
   z-index: 11;
   background: rgba(0, 0, 0, 0.3);
 }
-.prompt-content.data-v-15e037ae {
+.prompt-content {
   position: absolute;
   left: 50%;
   top: 40%;
@@ -126,12 +124,12 @@
   text-align: center;
   padding: 34rpx 50rpx 56rpx;
 }
-.prompt-content .icon.data-v-15e037ae {
+.prompt-content .icon {
     position: absolute;
     right: 52rpx;
     top: 36rpx;
 }
-.prompt-input.data-v-15e037ae {
+.prompt-input {
   margin-top: 80rpx;
   width: 100%;
   height: 88rpx;

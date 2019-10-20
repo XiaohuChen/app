@@ -21,9 +21,9 @@
     "pages/pagesB/login/register",
     "pages/pagesB/login/setPassword",
     "pages/pagesB/index/index",
+    "pages/pagesB/index/product-detail",
     "pages/pagesB/login/forgetPassword",
     "pages/pagesB/login/resetPassword",
-    "pages/pagesB/index/product-detail",
     "pages/pagesB/index/buy",
     "pages/pagesB/index/profit",
     "pages/pagesB/index/detail",
@@ -98,6 +98,6 @@
     "autoclose": false
   },
   "appname": "EVC",
-  "compilerVersion": "2.3.3",
+  "compilerVersion": "2.3.5",
   "usingComponents": {}
 }

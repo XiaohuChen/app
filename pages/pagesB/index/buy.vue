@@ -1,14 +1,17 @@
 <template>
 	<view class="content">
+		<view class="bgbox">
+		
+		</view>
 		<view class="recommend-product">
 			<view class="hot">
-				V1
+				V{{level}}
 			</view>
 			<view class="title">
-				1
+				{{name}}
 			</view>
 			<view>
-				<text class="percent">2%</text><text class="font-gray">月利率</text>
+				<text class="percent">{{ratio}}%</text><text class="font-gray">月利率</text>
 			</view>
 			<view class="profit">
 				周期:10天
@@ -19,37 +22,37 @@
 		</view>
 		<view class="padding">
 			<view class="font-middle rule flex-between">
-				<text class="font-middle">合计金额</text><text class="font-gray">可用：25656USTD</text>
+				<text class="font-middle">合计金额</text><text class="font-gray">可用：{{balance}}STD</text>
 			</view>
 			<view class="">
-				<input class="input-num" type="text" value="" />
+				<input class="input-num" type="text" value="10USDT" />
 			</view>
 			<view class="">
 				<view class="font-gray">
-					温馨提示： 
+					温馨提示：
 				</view>
 				<view class="font-gray">
 					如预约成功后，未在当日18:00之前购买并激活广告包，系统将对此账号进行禁封；禁封后此账号所有收益停止，并清空收益账户，如需解封须支付50USDT的解封费用，解封后收益正常产生，且保证金不退。
 				</view>
 			</view>
-			<view class="margin-top" >
+			<view class="margin-top">
 				<button class="blue" @tap="comfirmBook">确认预约</button>
 			</view>
 		</view>
-		
+
 		<!-- 点击确认预约之后输入密码的弹窗 -->
 		<view class="prompt-box" v-show="showPinMask" @tap="closePinMask"></view>
 		<view class="prompt-content" v-show="showPinMask">
 			<view class="">请输入资金密码 <text class="iconfont icon" @tap="closePinMask">&#xe723;</text></view>
-			<input class="prompt-input" type="text" v-model="pin" placeholder="请输入" />
-			<view class="font-blue text-right margin-top">
+			<input class="prompt-input" type="text" password v-model="password" placeholder="请输入资金密码" />
+			<view class="font-blue text-right margin-top" @tap="jumpToForgetPassword">
 				忘记密码？
 			</view>
 			<view class="margin-top">
 				<button class="blue" @tap="confirm">提交密码</button>
 			</view>
 		</view>
-		
+
 	</view>
 </template>
 
@@ -60,61 +63,148 @@
 		},
 		data() {
 			return {
-				showPinMask:true,
-				
+				showPinMask: false,
+				id: '',
+				level: '',
+				ratio: '',
+				name: '',
+				password:'',
+				balance:''
 			};
 		},
 
 		onLoad(options) {
+			this.id = options.id
+			//产品详情
+			uni.request({
+				url: this.baseUrl + "/product-detail",
+				data: {
+					Id: this.id
+				},
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (this.$base._indexOf(res.data.status)) {
+						this.$base._isLogin()
+					} else if (res.data.status == 1) {
+						this.level = res.data.data.NeedLevel
+						this.name = res.data.data.Name
+						this.ratio = res.data.data.Ratio
 
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+				}
+			})
+			//账户余额
+			uni.request({
+				url: this.baseUrl + "/balance-list",
+				data: {
+					page: 1,
+					count:1
+				},
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (this.$base._indexOf(res.data.status)) {
+						this.$base._isLogin()
+					} else if (res.data.status == 1) {
+						this.balance = res.data.data.Balance
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+				}
+			})
 		},
 		onPullDownRefresh() {
 
 		},
 		methods: {
-			closePinMask(){
+			closePinMask() {
 				this.showPinMask = false
 			},
-			comfirmBook(){
-				uni.showModal({
-				    title: '预约中...',
-				    content: '请耐心等待预约结果',
-				    success: function (res) {
-				        if (res.confirm) {
-				            console.log('用户点击确定');
-				        } else if (res.cancel) {
-				            console.log('用户点击取消');
-				        }
-				    }
-				});
-				// uni.showModal({
-				//     title: '预约失败',
-				//     content: '今日预约名额已满，无法进行预约',
-				//     success: function (res) {
-				//         if (res.confirm) {
-				//             console.log('用户点击确定');
-				//         } else if (res.cancel) {
-				//             console.log('用户点击取消');
-				//         }
-				//     }
-				// });
+			comfirmBook() {
+				this.showPinMask = true
+			},
+			confirm() {
+				//提交密码预约
+				uni.request({
+					url: this.baseUrl + "/plan-product",
+					data: {
+						Id: this.id,
+						PayPassword: this.password
+					},
+					method: 'POST',
+					header: {
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res)
+						if (this.$base._indexOf(res.data.status)) {
+							this.$base._isLogin()
+						} else if (res.data.status == 1) {
+							this.showPinMask = false
+							uni.showModal({
+								title: '预约中..',
+								content: '请耐心等待预约结束',
+								success: function(res) {
+									if (res.confirm) {
+										console.log('用户点击确定');
+									} else if (res.cancel) {
+										console.log('用户点击取消');
+									}
+								}
+							});
+
+
+						} else {
+							this.showPinMask = false
+							uni.showModal({
+								title: '预约失败',
+								content: '今日预约名额已满，无法进行预约',
+								success: function(res) {
+									if (res.confirm) {
+										console.log('用户点击确定');
+									} else if (res.cancel) {
+										console.log('用户点击取消');
+									}
+								}
+							});
+						}
+					}
+				})
+			},
+			jumpToForgetPassword(){
+				this.showPinMask = false
+				uni.navigateTo({
+					url:"../login/forgetPassword"
+				})
 			}
-			
+
 		}
 	}
 </script>
 
-<style scoped lang="scss">
-	.bgbox {
-		background-color: #F8F8F8;
-		height: 20rpx;
-	}
-
-	.content {
+<style lang="scss">
+	page{
 		background-color: #fff;
+	}
+	
+	.content {
+	
 		font-size: 24rpx;
 		color: #333;
-		height: 1334rpx;
+		
 
 		.recommend-product {
 			position: relative;
@@ -187,10 +277,12 @@
 			background-color: #F8F8F8;
 			font-size: 58rpx;
 			font-weight: bold;
+			text-align: center;
 		}
-		
+
 
 	}
+
 	/*弹窗样式*/
 	.prompt-box {
 		position: absolute;
@@ -201,7 +293,7 @@
 		z-index: 11;
 		background: rgba(0, 0, 0, 0.3);
 	}
-	
+
 	.prompt-content {
 		position: absolute;
 		left: 50%;
@@ -218,17 +310,17 @@
 		background: #fff;
 		text-align: center;
 		padding: 34rpx 50rpx 56rpx;
-		
+
 		.icon {
 			position: absolute;
 			right: 52rpx;
 			top: 36rpx;
 		}
-	
+
 	}
-	
+
 	.prompt-input {
-		margin-top:80rpx;
+		margin-top: 80rpx;
 		width: 100%;
 		height: 88rpx;
 		background-color: #F5F5F5;

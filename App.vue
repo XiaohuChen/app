@@ -1,13 +1,5 @@
-
 <script>
-	import lan from 'common/js/lan.js'
 	export default {
-		globalData:{
-			lan,
-			choice:{
-				value:'cn'
-			}
-		},
 		onLaunch: function() {
 			console.log('App Launch')
 		},

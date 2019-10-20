@@ -1,11 +1,18 @@
 {
-  "navigationBarTextStyle": "white",
   "navigationBarTitleText": "钱包",
   "titleNView": {
     "type": "default",
     "titleColor": "#333333",
     "backgroundColor": "#fff",
-    "titleSize": "36rpx"
+    "titleSize": "18px",
+    "buttons": [
+      {
+        "text": "EVC",
+        "fontSrc": "/static/font/iconfont.ttf",
+        "fontSize": "13px",
+        "float": "left"
+      }
+    ]
   },
   "usingComponents": {}
 }

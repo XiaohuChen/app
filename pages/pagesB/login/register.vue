@@ -122,7 +122,7 @@
 	}
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 	page {
 		background-color: #fff;
 	}

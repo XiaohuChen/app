@@ -1,11 +1,6 @@
 {
-  "navigationBarTextStyle": "white",
   "navigationBarTitleText": "收益账户",
-  "titleNView": {
-    "type": "default",
-    "titleColor": "#333333",
-    "backgroundColor": "#fff",
-    "titleSize": "36rpx"
-  },
-  "usingComponents": {}
+  "usingComponents": {
+    "uni-load-more": "/components/uni-load-more"
+  }
 }

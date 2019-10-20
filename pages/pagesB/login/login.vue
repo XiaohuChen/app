@@ -20,7 +20,7 @@
 
 		</view>
 		<view>
-			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="login">登录</button>
+			<button class="blue" hover-class="none" :disabled="disabled" :style="{opacity:opcity}" @click="login">登录</button>
 			<navigator url="./register">
 				<view class="font-small text-center">
 					<text class="font-gray">还没有账号?</text>
@@ -38,7 +38,7 @@
 		
 		data() {
 			return {
-				
+				disabled:true,
 				emailNum: '',
 				password: '',
 				opcity: 0.5
@@ -53,24 +53,48 @@
 		methods: {
 			//登录
 			login() {
-				
-				uni.navigateTo({
-					url: "backupMnemonic1"
+				this.disabled = true
+				uni.request({
+					url: this.baseUrl + "/member-login",
+					data: {
+						Email: this.emailNum,
+						Password:this.password
+					},
+					method: "POST",
+					success: (res) => {
+						console.log(res)
+						if (res.data.status == 1) {
+							uni.setStorageSync("token",res.data.data)
+							console.log(uni.getStorageSync('token'))
+							this.disabled = true
+							uni.navigateTo({
+								url:"../index/index"
+							})
+						} else {
+							this.disabled = false
+							uni.showToast({
+								title: res.data.message,
+								icon: 'none'
+							})
+						}
+					}
 				})
 			},
 			change(e) {
 				console.log(e.detail.value.length)
 				if (e.detail.value.length >= 3) {
 					this.opcity = 1
+					this.disabled = false
 				} else {
 					this.opcity = 0.5
+					this.disabled = true
 				}
 			}
 		}
 	}
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 	page{
 		background-color: #fff;
 	}

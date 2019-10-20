@@ -4,15 +4,15 @@
 			<view class="product-list-item">
 				<view class="title flex-between">
 					<view class="font-bold font-middle">
-						产品一号
+						{{name}}
 					</view>
 					<view class="desc">
-						放行
+						{{state}}
 					</view>
 				</view>
-				<view class="flex-between">
+				<view class="flex-between margin-top15">
 					<view class="">
-						<text class="percent percent-small">29.2%</text> <text class="font-gray font-small">年利率</text>
+						<text class="percent percent-small">{{ratio}}%</text> <text class="font-gray font-small">年利率</text>
 					</view>
 					<view class="">
 						周期10天
@@ -20,18 +20,15 @@
 				</view>
 			</view>
 		</view>
-
 		<view class="bgbox">
-
 		</view>
-
 		<view class="list-item font26">
 			<view class="rule padding flex-between">
 				<view class="font-gray">
 					投资时间
 				</view>
 				<view class="">
-					2019-09-03 14:23:12
+					{{addtime}}
 				</view>
 			</view>
 			<view class="rule padding flex-between">
@@ -39,7 +36,7 @@
 					投资金额
 				</view>
 				<view class="">
-					200 USDT
+					{{number}} USDT
 				</view>
 			</view>
 			<view class="rule padding flex-between">
@@ -47,7 +44,7 @@
 					放行时间
 				</view>
 				<view class="">
-					2019-09-03 14:23:12
+					{{passtime}}
 				</view>
 			</view>
 			<view class="rule padding flex-between">
@@ -55,7 +52,7 @@
 					报单时间
 				</view>
 				<view class="">
-					2019-09-03 14:23:12
+					{{paytime}}
 				</view>
 			</view>
 			<view class="rule padding flex-between">
@@ -63,7 +60,7 @@
 					锁仓数量
 				</view>
 				<view class="">
-					210 USDT
+					{{numEVC}} USDT
 				</view>
 			</view>
 		</view>
@@ -73,27 +70,58 @@
 
 <script>
 	export default {
-		components: {
-
-		},
 		data() {
 			return {
 				showPinMask: true,
-				productList: [{
-					dayText: '产品一号',
-					Yield: '2',
-					IsDay: '产品一号',
-					NodeDay: '放行',
-					PenalSumRatio: '5'
-				}]
+				
+				id:'',
+				name:'',
+				state:'',
+				ratio:'',
+				addtime:'',
+				passtime:'',
+				paytime:'',
+				numEVC:'',
+				number:''
 			};
 		},
 
 		onLoad(options) {
-
+			this.id = options.id
+			//产品详情
+			uni.request({
+				url: this.baseUrl + "/my-detail",
+				data: {
+					Id:this.id
+				},
+				header:{
+					Authorization:uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (this.$base._indexOf(res.data.status)) {
+						this.$base._isLogin()
+					} else if(res.data.status==1){
+						this.name = res.data.data.Name
+						this.ratio = res.data.data.Ratio
+						this.state = res.data.data.State
+						this.number = res.data.data.Number
+						this.addtime= this.$base._formatDate(res.data.data.AddTime) 
+						this.passtime=this.$base._formatDate(res.data.data.PassTime)  
+						this.paytime= this.$base._formatDate(res.data.data.PayTime)
+						this.numEVC= res.data.data.NumberEVC
+					}else{
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+					
+				}
+			})
 		},
 		onPullDownRefresh() {
-
+			
 		},
 		methods: {
 
@@ -158,6 +186,9 @@
 		}
 		.rule {
 			height: 100rpx;
+		}
+		.margin-top15{
+			margin-top: 15rpx;
 		}
 
 	}

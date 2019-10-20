@@ -4,7 +4,7 @@
 			<view class="item" v-for="(item,index) in 3" :key="index">
 				<view class="text-right dott" @click.stop="manage"><i class="iconfont icon-more"></i></view>
 				<view class="address">
-					<view class="title">ETH-Wallet{{lan.abc}}</view>
+					<view class="title">ETH-Wallet</view>
 					<view class="text-overflow font-small">asdfasdfhlasdfgsdfgsdfg</view>
 				</view>
 				<image src="../../static/images/ETH@2x.png" class="bg" mode="widthFix"></image>
@@ -23,9 +23,7 @@
 
 <script>
 	import uniPopup from '@/components/uni-popup.vue'
-	import lang from '../../common/js/lang.js'
 	export default {
-		mixins:[lang],
 		components: {
 			uniPopup
 		},

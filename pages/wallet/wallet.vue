@@ -3,7 +3,7 @@
 		<view class="assets-wrap">
 			<view class="text-right dott" @click.stop="manage"><i class="iconfont icon-more"></i></view>
 			<view class="wallet-address" @click="togglePopup">
-				<view>ETH-Wallet{{lan.abc}}</view>
+				<view>ETH-Wallet</view>
 				<view class="flex">
 					<text>hadoifjasldfjaklsdasdfasdf</text>
 					<i class="iconfont icon-erweima"></i>
@@ -50,14 +50,13 @@
 
 <script>	
 	import uniPopup from '@/components/uni-popup.vue'
-	import lang from '../../common/js/lang.js'
 	export default {
-		mixins:[lang],
 		components: {
 			uniPopup
 		},
 		data() {
 			return {
+				
 			}
 		},
 		onNavigationBarButtonTap(e) {

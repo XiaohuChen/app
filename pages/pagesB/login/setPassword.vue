@@ -88,7 +88,7 @@
 									icon: 'none'
 								})
 								uni.navigateTo({
-									url:"../index/index"
+									url:"./login"
 								})
 							} else {
 								uni.showToast({
@@ -113,7 +113,7 @@
 	}
 </script>
 
-<style scoped lang="scss">
+<style  lang="scss">
 	page{
 		background-color: #fff;
 	}

@@ -1,21 +1,22 @@
 <template>
 	<view class="content">
+		<view class="bgbox">
+		</view>
 		<view class="recommend-product">
 			<view class="hot">
-				V1
+				V{{level}}
 			</view>
 			<view class="title">
-				1
+				{{name}}
 			</view>
 			<view>
-				<text class="percent">2%</text><text class="font-gray">月利率</text>
+				<text class="percent">{{ $base._toFixed(ratio,4) }}%</text><text class="font-gray">月利率</text>
 			</view>
 			<view class="profit">
 				周期10天
 			</view>
 		</view>
 		<view class="bgbox">
-
 		</view>
 		<view class="padding border-bottom">
 			<view class="font-middle rule">
@@ -24,17 +25,17 @@
 			<view class="rule flex-between">
 				<text class="width100">报单</text>
 				<text class="ruled-detail">本日18:00之前 花费等额EVC激活广告包</text>
-				<text class="width100 font-blue">每天18:00</text>
+				<text class="width100 font-blue text-right">每天18:00</text>
 			</view>
 			<view class="rule flex-between">
 				<text class="width100">产生收益</text>
 				<text class="ruled-detail">报单成功后开始锁仓 并按T+1产生收益</text>
-				<text class="font-blue width100">次日</text>
+				<text class="font-blue width100 text-right">次日</text>
 			</view>
 			<view class="rule flex-between">
 				<text class="width100">收益发放</text>
 				<text class="ruled-detail">收益在锁仓时间(10天)到期后 返还本金和保证金</text>
-				<text class="font-blue width100">10天后</text>
+				<text class="font-blue width100 text-right">10天后</text>
 			</view>
 		</view>
 		<view class="padding book">
@@ -99,50 +100,88 @@
 		</view>
 		<view class="bgbox">
 		</view>
-		<view class="padding font-middle flex-between rule">
+		<view class="padding font-middle flex-between rule problem">
 			<text>常见问题</text> <text class="iconfont">&#xea25;</text>
 		</view>
+		<view class="bgbox">
+		</view>
 		<view class="">
-			<button class="blue width100%">立即预约</button>
+			<button class="blue font-bold oreder-btn" @tap="order">立即预约</button>
 		</view>
 	</view>
 </template>
 
 <script>
 	export default {
-		components: {
-
-		},
+		
 		data() {
 			return {
-
+				id: 0,
+				level: '',
+				name: '',
+				ratio: ''
 			};
 		},
 
 		onLoad(options) {
-
-		},
-		onPullDownRefresh() {
-
+			this.id = options.id
+			this.init()
 		},
 		methods: {
+			init() {
+				//产品详情
+				uni.request({
+					url: this.baseUrl + "/product-detail",
+					data: {
+						Id: this.id
+					},
+					header: {
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res)
+						if(this.$base._indexOf(res.data.status)){
+							this.$base._isLogin()
+						}else if (res.data.status == 1) {
+							this.level = res.data.data.NeedLevel
+							this.name = res.data.data.Name
+							this.ratio = res.data.data.Ratio
 
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: 'none'
+							})
+						}
+					}
+				})
+			},
+			//立即预约
+			order(){
+				//跳转到购买页面
+				uni.navigateTo({
+					url:"./buy?id="+this.id
+				})
+			},
+			forgetPassword(){
+				//忘记密码
+				uni.navigateTo({
+					url:"../login/login"
+				})
+			}
 		}
 	}
 </script>
 
-<style scoped lang="scss">
-	.bgbox {
-		background-color: #F8F8F8;
-		height: 20rpx;
-	}
-	
-	.content {
+<style  lang="scss">
+	page {
 		background-color: #fff;
+	}
+
+	.content {
 		font-size: 24rpx;
 		color: #333;
-		height: 1334rpx;
-
+		height: 100%;
 		.recommend-product {
 			position: relative;
 			margin: 20rpx 0;
@@ -208,5 +247,63 @@
 		.book {
 			line-height: 60rpx;
 		}
+		.oreder-btn{
+			width: 100%;
+		}
+		
+		/*弹窗样式*/
+		.prompt-box {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 11;
+			background: rgba(0, 0, 0, 0.3);
+		}
+		
+		.prompt-content {
+			position: absolute;
+			left: 50%;
+			top: 40%;
+			z-index: 20;
+			width: 80%;
+			height: 380upx;
+			max-width: 600upx;
+			border: 2upx solid #ccc;
+			border-radius: 8rpx;
+			box-sizing: bordre-box;
+			transform: translate(-50%, -50%);
+			overflow: hidden;
+			background: #fff;
+			text-align: center;
+			padding: 34rpx 50rpx 56rpx;
+		
+			.icon {
+				position: absolute;
+				right: 52rpx;
+				top: 36rpx;
+			}
+		
+		}
+		
+		.prompt-input {
+			margin-top: 40rpx;
+			width: 100%;
+			height: 88rpx;
+			background-color: #F5F5F5;
+			border-radius: 8rpx;
+			font-size: 24rpx;
+			text-align: left;
+			padding-left: 26rpx;
+		}
+		.forget-password {
+			font-size: 24rpx;
+			color: #007AFF;
+			display: flex;
+			flex-direction: row-reverse;
+			margin-top: 32rpx;
+		}
 	}
+	
 </style>

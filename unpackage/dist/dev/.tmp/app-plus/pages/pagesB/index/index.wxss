@@ -156,7 +156,7 @@
     width: 332rpx;
     -webkit-box-shadow: 0 0 12rpx rgba(37, 144, 254, 0.1);
             box-shadow: 0 0 12rpx rgba(37, 144, 254, 0.1);
-    text-align: center;
+    text-align: left;
     line-height: 60rpx;
 }
 .content .recommend-product .title {
