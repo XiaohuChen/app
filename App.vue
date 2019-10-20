@@ -1,0 +1,28 @@
+
+<script>
+	import lan from 'common/js/lan.js'
+	export default {
+		globalData:{
+			lan,
+			choice:{
+				value:'cn'
+			}
+		},
+		onLaunch: function() {
+			console.log('App Launch')
+		},
+		onShow: function() {
+			console.log('App Show')
+		},
+		onHide: function() {
+			console.log('App Hide')
+		}
+	}
+</script>
+
+<style>
+	/*每个页面公共css */
+	@import "./common/css/iconfont.css";
+	@import "./common/css/base.css";
+	
+</style>

@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "公告",
+  "titleNView": {
+    "type": "default",
+    "titleColor": "#333333",
+    "backgroundColor": "#fff",
+    "titleSize": "36rpx"
+  },
+  "usingComponents": {}
+}
