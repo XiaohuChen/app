@@ -49,6 +49,77 @@
 .list {
   margin-bottom: 90rpx;
 }
+.list {
+  margin-top: 20rpx;
+}
+.list .list-item {
+    height: 160rpx;
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    line-height: 50rpx;
+    background-color: #fff;
+    padding: 0 26rpx;
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+    border-bottom: 2rpx solid #F1F1F1;
+}
+.list .list-item .list-item-right {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: row;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+}
+.list .list-item .list-item-right .icon {
+        font-size: 26rpx;
+        margin-left: 28rpx;
+        color: #BBB;
+}
+.list .list-item .name-en {
+      font-size: 30rpx;
+      color: #333;
+      font-weight: bold;
+}
+.list .list-item .name-ch {
+      font-size: 24rpx;
+      color: #999;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: reverse;
+      -webkit-flex-direction: row-reverse;
+          -ms-flex-direction: row-reverse;
+              flex-direction: row-reverse;
+}
+.list .list-item .desc {
+      color: #17A52F;
+}
 .content {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;

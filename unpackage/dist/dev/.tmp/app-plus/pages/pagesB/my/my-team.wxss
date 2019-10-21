@@ -136,4 +136,7 @@
           overflow: hidden;
           margin-right: 20rpx;
 }
+.padding-bottom {
+  padding-bottom: 20rpx;
+}
 

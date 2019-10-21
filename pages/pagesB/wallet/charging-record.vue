@@ -1,9 +1,6 @@
 <template>
+	<!-- 充提记录 -->
 	<view class="content">
-		<view class="page-head2-padding">
-			<page-head2 :headerTitle="headerTitle"></page-head2>
-		</view>
-
 		<view class="nav">
 			<view class="nav-text" v-for="(item,index) in list" :key="item.id" :class="currentNumber == index ? 'active' : ''"
 			 @tap="currentInfo(index)">
@@ -42,21 +39,13 @@
 </template>
 
 <script>
-	import pageHead2 from '@/components/page-head2.vue';
 	export default {
-		components: {
-			pageHead2
-		},
 		data() {
 			return {
-				currentNumber: 0, // 用来判断active样式类是否显示
-				headerTitle: '充提记录',
-				statusChange: '',
+				currentNumber: 0, // 用来判断active样式类是否s
 				curPage: 1,
 				status: 0,
-				nameList: [
-					{title:'充值',time:'2019-09-10 14:30:15',money:'+1000BTC',status:'已完成'}
-				],
+				nameList: [],
 				id: '',
 				acid:'',
 				list: [{
@@ -75,8 +64,6 @@
 			if(!uni.getStorageSync("token")&&!uni.getStorageSync("SecretKey")){
 				this.$base._isLogin()
 			}
-			this.activityId = options.activityId
-			console.log(this.activityId)
 			this.getCoreDetail()
 		},
 		onPullDownRefresh() {
@@ -86,6 +73,7 @@
 			  }, 1000);
 		  },
 		methods: {
+			
 			currentInfo(index) {
 				this.currentNumber = index;
 				console.log(this.currentNumber)
@@ -100,9 +88,7 @@
 					},
 					success: (res) => {
 						console.log(res)
-						if (res.data.status == 20003) {
-							this.$base._isLogin()
-						} else if (res.data.status == 1) {
+						 if (res.data.status == 1) {
 							// this.nameList = res.data.data.data
 							console.log(this.nameList)
 						} else {
@@ -117,18 +103,20 @@
 			//我的理财列表 显示全部
 			getCoreDetail() {
 				uni.request({
-					url: this.baseUrl + "/investment-list?status=" + this.status,
+					url: this.baseUrl + "/recharge-withdraw",
+					data:{
+						page:1,
+						count:10000
+					},
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
-						
 						console.log(res.data)
-						if (res.data.status == 20003) {
+						if (this.$base._indexOf(res.data.status)) {
 							this.$base._isLogin()
-						} else if (res.data.status == 1) {
+						} else  if (res.data.status == 1) {
 							// this.nameList = res.data.data.data
 							
 						} else {
@@ -165,6 +153,9 @@
 </script>
 
 <style lang="scss">
+	page{
+		background-color: #fff;
+	}
 	.active {
 		color: #0099FF;
 	}
@@ -173,10 +164,7 @@
 		box-sizing: border-box;
 		font-size: 30rpx;
 		color: #333;
-		background-color: #fff;
-		height: 1334rpx;
-		width: 750rpx;
-
+		
 		.nav {
 			display: flex;
 			flex-direction: row;

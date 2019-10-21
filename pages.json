@@ -241,48 +241,24 @@
 		{
 			"path": "pages/pagesB/wallet/transfer-num",
 			"style": {
-				"navigationBarTextStyle": "white",
-				"navigationBarTitleText": "转账",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "转账"
 			}
 		},
 		{
 			"path": "pages/pagesB/wallet/receivables-qrcode",
 			"style": {
-				"navigationBarTextStyle": "white",
-				"navigationBarTitleText": "收款",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "收款"
 			}
 		},
 		{
 			"path": "pages/pagesB/wallet/charging-record",
 			"style": {
-
-				"navigationBarTitleText": "充提记录",
-				"app-plus": {
-					"titleNView": false,
-					"animationType": "slide-in-bottom"
-				}
+				"navigationBarTitleText": "充提记录"
 			}
 		},
 		{
 			"path": "pages/pagesB/wallet/record-details",
 			"style": {
-
 				"navigationBarTitleText": "记录详情",
 				"app-plus": {
 					"titleNView": false,
@@ -322,7 +298,14 @@
 						"type": "default",
 						"titleColor": "#333333",
 						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
+						"titleSize": "36rpx",
+						"buttons": [{
+								"text": "EVC",
+								"fontSrc": "/static/font/iconfont.ttf",
+								"fontSize": "13px",
+								"float": "left"
+							}
+						]
 					}
 				}
 			}
@@ -337,7 +320,14 @@
 						"type": "default",
 						"titleColor": "#333333",
 						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
+						"titleSize": "36rpx",
+						"buttons": [{
+								"text": "EVC",
+								"fontSrc": "/static/font/iconfont.ttf",
+								"fontSize": "13px",
+								"float": "left"
+							}
+						]
 					}
 				}
 			}
@@ -346,222 +336,135 @@
 			"path": "pages/pagesB/personal/personal",
 			"style": {
 				"navigationBarTitleText": "个人中心",
-				"app-plus": {
-					"titleNView": false,
-					"animationType": "slide-in-bottom"
+				"titleNView": {
+					"type": "default",
+					"titleColor": "#333333",
+					"backgroundColor": "#fff",
+					"titleSize": "36rpx",
+					"buttons": [{
+							"text": "EVC",
+							"fontSrc": "/static/font/iconfont.ttf",
+							"fontSize": "13px",
+							"float": "left"
+						}
+					]
 				}
+			}
+		},
+		
+		{
+			"path": "pages/pagesB/personal/unsealing",
+			"style": {
+				"navigationBarTitleText": "账号解封"
+			
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/problem",
 			"style": {
-				"navigationBarTitleText": "常见问题",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "常见问题"
+			
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/real-name",
 			"style": {
-				"navigationBarTitleText": "实名认证",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "实名认证"
+				
 			}
 		},
-
 		{
 			"path": "pages/pagesB/personal/set-password",
 			"style": {
-				"navigationBarTitleText": "修改登录/交易密码",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "修改登录密码"
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/set-paypassword",
+			"style": {
+				"navigationBarTitleText": "修改交易密码"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/self-in",
 			"style": {
-				"navigationBarTitleText": "安全中心",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "安全中心"
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/real-photo",
 			"style": {
-				"navigationBarTitleText": "实名认证",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "实名认证"
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/personal-info",
 			"style": {
-				"navigationBarTitleText": "个人信息",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "个人信息"
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/set-nickname",
 			"style": {
-				"navigationBarTitleText": "设置昵称",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "设置昵称"
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/my-bill",
 			"style": {
-				"navigationBarTitleText": "我的账单",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "我的账单"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/recorde-detail",
 			"style": {
-				"navigationBarTitleText": "记录详情",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "记录详情"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/personal/binding-phone",
 			"style": {
-				"navigationBarTitleText": "绑定手机",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "绑定手机"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/dapp/dapp",
 			"style": {
-				"navigationBarTitleText": "Dapp",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "Dapp"
+			
 			}
 		},
 		{
 			"path": "pages/pagesB/dapp/text-detail",
 			"style": {
-				"navigationBarTitleText": "正文详情",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "正文详情"
+				
 			}
 		},
 
 		{
 			"path": "pages/pagesB/dapp/public-notification",
 			"style": {
-				"navigationBarTitleText": "公告",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "公告"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/dapp/public-detail",
 			"style": {
-				"navigationBarTitleText": "详情",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "详情"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/quotation/quotation",
 			"style": {
-				"navigationBarTitleText": "行情",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx"
-					}
-				}
+				"navigationBarTitleText": "行情"
+			
 			}
 		}
 
@@ -571,7 +474,7 @@
 		"current": 0, //当前激活的模式（list 的索引项）
 		"list": [{
 			"name": "test", //模式名称
-			"path": "pages/pagesB/wallet/wallet" //启动页面，必选
+			"path": "pages/pagesB/personal/personal" //启动页面，必选
 		}]
 
 	},

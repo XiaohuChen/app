@@ -1,18 +1,16 @@
 <template>
 	<view class="content">
-		
-
-		<view class="top top2 flex" @tap="jumpToBindingPhoneNum">
-			<image class="user-photo" src="../../../static/images/BTC@2x.png" mode=""></image><text class="iconfont icon">&#xea25;</text>
+		<view class="top top2 flex" @tap="changeAvatar">
+			<image class="user-photo" :src="avatar" mode=""></image><text class="iconfont icon">&#xea25;</text>
 		</view>
 		<view class="top" @tap="jumpToSetPassword">
-			<text>小吴小吴烦恼全无</text><text class="iconfont icon">&#xea25;</text>
+			<text>{{nickname}}</text><text class="iconfont icon">&#xea25;</text>
 		</view>
 		<view class="top" @tap="jumpToResetPin">
-			<text>账号:123456</text>
+			<text>账号:{{email}}</text>
 		</view>
 		<view class="top top2" @tap="jumpToResetPin">
-			<text>个人业绩：23655.236 USDT</text>
+			<text>个人业绩：{{achievement}} USDT</text>
 		</view>
 	</view>
 </template>
@@ -23,65 +21,42 @@
 		
 		data() {
 			return {
-				headerTitle: '个人信息',
-				phoneState: '',
-				passwordState: '',
-				unBindingPhone: false
+				nickname:'',
+				avatar:'',
+				email:'',
+				achievement:''
+				
 			}
 		},
 		onLoad() {
 			if (!uni.getStorageSync("token") && !uni.getStorageSync("SecretKey")) {
 				this.$base._isLogin()
 			}
-			//判断是否绑定手机号
+			//获取用户信息
 			uni.request({
-				url: this.baseUrl + "/member-check_phone",
+				url: this.baseUrl + "/member-info",
 				header: {
-					//除注册登录外其他的请求都携带用户token和秘钥		
-					Authorization: uni.getStorageSync('token'),
-					SecretKey: uni.getStorageSync('SecretKey')
+					//除注册登录外其他的请求都携带用户token和秘钥
+					Authorization: uni.getStorageSync('token')
 				},
 				success: (res) => {
 					console.log(res.data)
 					if (this.$base._indexOf(res.data.status)) {
-						this.unBindingPhone = false
 						this.$base._isLogin()
-					} else if (res.data.status == 10003) {
-						this.unBindingPhone = true
-						this.phoneState = "未设置"
 					} else if (res.data.status == 1) {
-						this.phoneState = "修改"
-						this.unBindingPhone = false
+						this.nickname = res.data.data.NickName
+						this.avatar = res.data.data.Avatar
+						this.email = res.data.data.Email
+						this.achievement = res.data.data.Achievement
 					} else {
-						this.unBindingPhone = false
 						uni.showToast({
-							title: res.data.message
+							title: res.data.message,
+							icon: "none"
 						})
 					}
 				}
 			})
-			//判断是否设置交易密码
-			uni.request({
-				url: this.baseUrl + "/member-check_pay_password",
-				header: {
-					//除注册登录外其他的请求都携带用户token和秘钥		
-					Authorization: uni.getStorageSync('token'),
-					SecretKey: uni.getStorageSync('SecretKey')
-				},
-				success: (res) => {
-					console.log(res.data)
-					if (res.data.status == 10003) {
-
-						this.passwordState = "未设置"
-					} else if (res.data.status == 1) {
-						this.passwordState = "修改"
-					} else {
-						uni.showToast({
-							title: res.data.message
-						})
-					}
-				}
-			})
+		
 		},
 		methods: {
 			jumpToBindingPhoneNum() {

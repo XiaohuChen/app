@@ -2,31 +2,29 @@
 	<view class="content">
 		<view class="input-wrap padding-top">
 			<view class="">
-				<input class="input-left" placeholder="请输入手机号" placeholder-class="input-placeholder" v-model="emailNum" @input="change">
+				<input class="input-left" placeholder="请输入手机号" placeholder-class="input-placeholder" v-model="phone" @input="change">
 			</view>
 			<view>
-				
-				<input class="input-left"  placeholder="请输入短信验证码" placeholder-class="input-placeholder" v-model="password">
-				<button ref="getCode1" class="get-indentify" :disabled="nosendCode" @click="sendMsgCodeTimer">{{sendbtn.text}}</button>				
+
+				<input class="input-left" placeholder="请输入短信验证码" placeholder-class="input-placeholder" v-model="code">
+				<button class="get-indentify" :disabled="nosendCode" @click="sendCode">{{sendbtn.text}}</button>
 			</view>
 		</view>
 		<view>
-			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="backupMnemonic">下一步</button>
+			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="comfirme">绑定</button>
 		</view>
 
 	</view>
 </template>
 
 <script>
-
 	export default {
-		
+
 		data() {
 			return {
-				headerTitle: '绑定手机',
-				emailNum:'',
-				password:'',
-				opcity:0.5,
+				phone: '',
+				code: '',
+				opcity: 0.5,
 				nosendCode: false,
 				sendbtn: {
 					text: '获取验证码',
@@ -35,49 +33,85 @@
 			}
 		},
 		onLoad() {
-			
+
 		},
 		onReady() {
-			
+
 		},
 		methods: {
-			backupMnemonic() {
-				uni.navigateTo({
-					url: "backupMnemonic1"
+			sendCode() {
+				//请求短信验证码
+				uni.request({
+					url: this.baseUrl + "/sms-bindphone-code",
+					data: {
+						Phone: this.phone,
+					},
+					method: 'POST',
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res.data)
+						if (this.$base._indexOf(res.data.status)) {
+							this.$base._isLogin()
+						} else if (res.data.status == 1) {
+							this.sendMsgCodeTimer()
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
 				})
 			},
-			change(e){
-				console.log(e.detail.value.length)
-				if (e.detail.value.length >= 3) {
+			comfirme() {
+				//修改登录密码
+				uni.request({
+					url: this.baseUrl + "/bind-phone",
+					data: {
+						Phone: this.phone,
+						AuthCode: this.code,
+					},
+					method: 'POST',
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res.data)
+						if (this.$base._indexOf(res.data.status)) {
+							this.$base._isLogin()
+						} else if (res.data.status == 1) {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+							uni.navigateTo({
+								url: "./personal"
+							})
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
+				})
+			},
+			change(e) {
+				if (e.detail.value.length >= 10) {
 					this.opcity = 1
-				}else{
+				} else {
 					this.opcity = 0.5
 				}
 			},
-			// 发送短信验证码绑定手机号
-			// sendCode(e) {
-			// 	// 防止表单重复提交方案
-			// 	rpx.nosendCode = true
-			// 	// 请求短信验证码
-			// 	this.$api.userSmscode({
-			// 		phone: this.userPhone
-			// 	}).then(res => {
-			// 		this.smsCode = res.data.data.smsCode;
-			// 		this.$refs.getCode1.$el.style.backgroundColor = "#aaaaaa"
-			// 		this.sendMsgCodeTimer();
-			// 		uni.showToast({
-			// 			title: '短信已发送',
-			// 			icon: 'none'
-			// 		})
 			
-			// 	}).catch(err => {
-			// 		this.nosendCode = false
-			// 		uni.showToast({
-			// 			title: err.data.data,
-			// 			icon: "none"
-			// 		})
-			// 	});
-			// },
 			// 发送短信验证码计时器
 			sendMsgCodeTimer() {
 				this.timerId = setInterval(() => {
@@ -105,6 +139,7 @@
 		font-size: 24rpx;
 		color: #999999;
 		height: 1334rpx;
+
 		.logo {
 			width: 86px;
 			height: 86rpx;
@@ -115,13 +150,16 @@
 			width: 160rpx;
 			height: 160rpx;
 		}
-		.forget-password{
+
+		.forget-password {
 			margin-left: 500rpx;
 		}
-		.bottom{
+
+		.bottom {
 			margin-top: 280rpx;
 			text-align: center;
 		}
+
 		.get-indentify {
 			height: 70rpx;
 			line-height: 70rpx;
@@ -130,8 +168,9 @@
 			border: none;
 			color: #007AFF;
 		}
-		
+
 	}
+
 	.input-wrap>view {
 		border-bottom: 1px solid #ECECEC;
 		padding: 20rpx 0;

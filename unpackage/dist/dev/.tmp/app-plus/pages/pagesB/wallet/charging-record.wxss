@@ -24,6 +24,9 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+page {
+  background-color: #fff;
+}
 .active {
   color: #0099FF;
 }
@@ -32,9 +35,6 @@
           box-sizing: border-box;
   font-size: 30rpx;
   color: #333;
-  background-color: #fff;
-  height: 1334rpx;
-  width: 750rpx;
 }
 .content .nav {
     display: -webkit-box;

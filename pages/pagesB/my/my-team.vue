@@ -1,46 +1,46 @@
 <template>
 	<view class="content padding">
-		<view class="middle text-center">
+		<view class="middle text-center" @tap="jumpToMyTeam2">
 			<view class="all">
-				<text>团队总业绩(社区收益10%)</text>
+				<text>团队总业绩(社区收益{{ratio}}%)</text>
 			</view>
 			<view class="all-num ">
-				<text class="font-bold">000000</text>  <text class="font-middle">USTD</text>
+				<text class="font-bold">{{teamAchievement}}</text>  <text class="font-middle">USTD</text>
 			</view>
 			<view class="flex-between">
-				<text>团队人数：123</text>｜<text>有效直推人数：16</text>
+				<text>团队人数：{{team}}</text>｜<text>有效直推人数：{{invite}}</text>
 			</view>
 		</view>
 		<view class="team-text font-bold font-middle">
 			团队列表
 		</view>
-		<view class="list">
+		<view class="list" v-for="item in inviteList" :key="item.id">
 			<view class="list-item">
 				<view class="list-item-left">
-					<image class="img" src="../../../static/images/BTC@2x.png" mode="widthFix"></image>
+					<image class="img" :src="item.Avatar" mode="widthFix"></image>
 					<view class="">
 						<view class="font-middle">
-							嚣张的小张 
+							{{item.Name}}
 						</view>
 						<view class="name-ch">
-							185****8741
+							{{item.Phone}}
 						</view>
 					</view>
 				</view>
 				<view class="">
 					<view class="">
-						团队：16人
+						团队：{{item.TeamNumber}}人
 					</view>
 				</view>
 				
 			</view>
-			<view class="flex-between padding ">
+			<view class="flex-between padding border-bottom padding-bottom ">
 				<view class="">
 					<view class="">
 						个人业绩
 					</view>
 					<view class="">
-						<text class="orange font-bold">1000.00</text><text>USDT</text>
+						<text class="orange font-bold">{{item.Achievement}}</text><text>USDT</text>
 					</view>
 				</view>
 				<view class="">
@@ -48,7 +48,7 @@
 						团队业绩
 					</view>
 					<view class="">
-						<text class="orange font-bold">1000.00</text><text>USDT</text>
+						<text class="orange font-bold">{{item.TeamAchievement}}</text><text>USDT</text>
 					</view>
 				</view>
 			</view>
@@ -62,16 +62,12 @@
 
 		data() {
 			return {
-				imgUrl: '',
-				nameEn: '',
-				nameCh: '',
-				allNum: '',
-				allNumEqual: '',
-				coreId: '',
-				price: '',
-				money: '',
-				show: true,
-				password: false,
+				ratio:'',
+				team:'',
+				teamAchievement:'',
+				level:'',
+				invite:'',
+				inviteList:[]
 			};
 		},
 		onLoad() {
@@ -91,25 +87,48 @@
 		},
 		methods: {
 			initData() {
-				//core首页
+				//我的团队上面蓝色框框的数据
 				uni.request({
-					url: this.baseUrl + "/core-list",
+					url: this.baseUrl + "/member-invite",
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
 						console.log(res.data)
-						if (res.data.status == 20003) {
+						if (this.$base._indexOf(res.data.status)) {
 							this.$base._isLogin()
 						} else if (res.data.status == 1) {
-							this.imgUrl = res.data.data.Logo
-							this.nameEn = res.data.data.EnName
-							this.nameCh = res.data.data.FullName
-							this.coreId = res.data.data.Id
-							this.price = res.data.data.Price
-							this.money = res.data.data.Money
+							this.team = res.data.data.Team
+							this.teamAchievement = res.data.data.TeamAchievement
+							this.ratio = res.data.data.Ratio
+							this.level = res.data.data.Level
+							this.invite = res.data.data.Invite
+							
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
+				})
+				//直推列表
+				
+				uni.request({
+					url: this.baseUrl + "/invite-list",
+					data:{
+						page:1,
+						count:100000
+					},
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res.data)
+						 if (res.data.status == 1) {
+							this.inviteList = res.data.data.list
 						} else {
 							uni.showToast({
 								title: res.data.message,
@@ -119,30 +138,11 @@
 					}
 				})
 			},
-			jumpToCurrencyDetail() {
+			jumpToMyTeam2(){
 				uni.navigateTo({
-					url: './currency-detail?coreId=' + this.coreId
+					url:"./my-team2"
 				})
-			},
-			scan() {
-				//扫一扫		
-				// 允许通过相机扫码和相册
-				uni.scanCode({
-					onlyFromCamera: false,
-					success: function(res) {
-						console.log('条码类型：' + res.scanType);
-						console.log('条码内容：' + res.result);
-					}
-				});
-			},
-			noSee() {
-				this.show = !this.show
-				if (this.show == false) {
-					this.password = true
-				} else {
-					this.password = false
-				}
-			},
+			}
 		}
 	}
 </script>
@@ -241,5 +241,8 @@
 			}
 		}
 
+	}
+	.padding-bottom{
+		padding-bottom: 20rpx;
 	}
 </style>

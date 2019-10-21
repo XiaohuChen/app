@@ -1,29 +1,37 @@
 <template>
+	<!-- 充提记录 -->
 	<view class="content">
-		<view class="bgbox">
-			
-		</view>
 		<view class="nav">
 			<view class="nav-text" v-for="(item,index) in list" :key="item.id" :class="currentNumber == index ? 'active' : ''"
 			 @tap="currentInfo(index)">
 				{{item.title}}
 			</view>
 		</view>
+		<view class="bgbox">
+		
+		</view>
 		<view class="list">
-			<view class="list-item" >
+			<view class="list-item" v-for="(item,index) in nameList" :key="index" @tap="jumpToRecorde(index)">
 				<view class="">
 					<view class="name-en">
-						充值
+						{{item.title}}
 					</view>
 					<view class="name-ch">
-						2019-09
+						{{item.time}}
 					</view>
 				</view>
 				<view class="list-item-right">
+					<view class="">
 						<view class="name-en">
-							+100Btc
+							{{item.money}}
 						</view>
-
+						<view class="name-ch desc">
+							{{item.status}}
+						</view>
+					</view>
+					<view class="iconfont icon">
+						&#xea25;
+					</view>
 				</view>
 			</view>
 		</view>
@@ -31,13 +39,10 @@
 </template>
 
 <script>
-	
 	export default {
-		
 		data() {
 			return {
 				currentNumber: 0, // 用来判断active样式类是否显示
-				headerTitle: '我的理财',
 				statusChange: '',
 				curPage: 1,
 				status: 0,
@@ -60,8 +65,6 @@
 			if(!uni.getStorageSync("token")&&!uni.getStorageSync("SecretKey")){
 				this.$base._isLogin()
 			}
-			this.activityId = options.activityId
-			console.log(this.activityId)
 			this.getCoreDetail()
 		},
 		onPullDownRefresh() {
@@ -85,9 +88,7 @@
 					},
 					success: (res) => {
 						console.log(res)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
-						} else if (res.data.status == 1) {
+						 if (res.data.status == 1) {
 							this.nameList = res.data.data.data
 							console.log(this.nameList)
 						} else {
@@ -102,19 +103,21 @@
 			//我的理财列表 显示全部
 			getCoreDetail() {
 				uni.request({
-					url: this.baseUrl + "/investment-list?status=" + this.status,
+					url: this.baseUrl + "/recharge-withdraw",
+					data:{
+						page:1,
+						count:10000
+					},
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
-						
 						console.log(res.data)
 						if (this.$base._indexOf(res.data.status)) {
 							this.$base._isLogin()
-						} else if (res.data.status == 1) {
-							this.nameList = res.data.data.data
+						} else  if (res.data.status == 1) {
+							// this.nameList = res.data.data.data
 							
 						} else {
 							uni.showToast({
@@ -136,13 +139,9 @@
 					return "已完结"
 				}
 			},
-			jumpToManage(index) {
-				this.id = this.nameList[index].Id
-				this.acid = this.nameList[index].ActivityId
-				console.log(this.id)//我的理财id
-				console.log(this.acid)//理财活动id
+			jumpToRecorde(index) {
 				uni.navigateTo({
-					url: "./manage-in?id=" + this.id +"&acid="+this.acid//需要传一个investmentId过去,还需传一个acid过去获取天数
+					url: "./recorder-detail?id="+this.nameList[index].Id
 				})
 			}
 		}
@@ -150,18 +149,18 @@
 </script>
 
 <style lang="scss">
+	page{
+		background-color: #fff;
+	}
 	.active {
-		color: #007AFF;
+		color: #0099FF;
 	}
 
 	.content {
 		box-sizing: border-box;
 		font-size: 30rpx;
 		color: #333;
-		background-color: #fff;
-		height: 1334rpx;
-		width: 750rpx;
-
+		
 		.nav {
 			display: flex;
 			flex-direction: row;
@@ -207,18 +206,19 @@
 				.name-en {
 					font-size: 30rpx;
 					color: #333;
-					
+					font-weight: bold;
 				}
 
 				.name-ch {
-					font-size: 22rpx;
+					font-size: 24rpx;
 					color: #999;
-					
+					display: flex;
+					flex-direction: row-reverse;
 
 				}
 
 				.desc {
-					color: #00D8A0;
+					color: #17A52F;
 				}
 			}
 		}

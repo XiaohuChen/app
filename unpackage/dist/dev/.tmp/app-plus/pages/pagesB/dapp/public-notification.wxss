@@ -24,20 +24,20 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.content.data-v-25630ce8 {
+.content.data-v-019b6aa8 {
   background-color: #fff;
   height: 1334rpx;
 }
-.content .item-left.data-v-25630ce8 {
+.content .item-left.data-v-019b6aa8 {
     width: 434rpx;
 }
-.content .title.data-v-25630ce8 {
+.content .title.data-v-019b6aa8 {
     font-size: 28rpx;
 }
-.content .list-item.data-v-25630ce8 {
+.content .list-item.data-v-019b6aa8 {
     height: 140rpx;
 }
-.content .time.data-v-25630ce8 {
+.content .time.data-v-019b6aa8 {
     font-size: 22rpx;
 }
 

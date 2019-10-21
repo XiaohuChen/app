@@ -1,8 +1,6 @@
 <template>
 	<view class="content">
-		<view class="page-head2-padding">
-			<page-head2 :headerTitle="headerTitle"></page-head2>
-		</view>
+	
 		<view class="bgbox">
 		</view>
 		<view class="padding">
@@ -79,11 +77,8 @@
 </template>
 
 <script>
-	import pageHead2 from '@/components/page-head2.vue';
 	export default {
-		components: {
-			pageHead2
-		},
+		
 		data() {
 			return {
 				currentNumber: 0, // 用来判断active样式类是否显示

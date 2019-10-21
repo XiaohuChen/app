@@ -37,9 +37,11 @@
     "pages/pagesB/my/my-team",
     "pages/pagesB/my/my-team2",
     "pages/pagesB/personal/personal",
+    "pages/pagesB/personal/unsealing",
     "pages/pagesB/personal/problem",
     "pages/pagesB/personal/real-name",
     "pages/pagesB/personal/set-password",
+    "pages/pagesB/personal/set-paypassword",
     "pages/pagesB/personal/self-in",
     "pages/pagesB/personal/real-photo",
     "pages/pagesB/personal/personal-info",
@@ -98,6 +100,6 @@
     "autoclose": false
   },
   "appname": "EVC",
-  "compilerVersion": "2.3.5",
+  "compilerVersion": "2.3.6",
   "usingComponents": {}
 }

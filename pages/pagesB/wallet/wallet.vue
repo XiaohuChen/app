@@ -11,11 +11,11 @@
 			</view>
 			<view class="">
 				<view class="font-big font-bold margin-top">
-					{{money}}
+					{{$base._toFixed(money,4) }}
 				</view>
 			</view>
 			<view class="flex-between margin-top padding">
-				<view class="">
+				<view class="" @tap="jumToQrcode">
 					<view class="iconfont font-bold font-big font-blue">
 						&#xe7e4;
 					</view>
@@ -23,7 +23,7 @@
 						充值
 					</view>
 				</view>
-				<view class="">
+				<view class="" @tap="jumpToTransferNum">
 					<view class="iconfont font-bold font-big font-blue">
 						&#xe7e5;
 					</view>
@@ -31,7 +31,7 @@
 						提现
 					</view>
 				</view>
-				<view class="">
+				<view class="" @tap="jumpToRecord">
 					<view class="iconfont font-bold font-big font-blue">
 						&#xe7e3;
 					</view>
@@ -49,7 +49,7 @@
 			<text class="font-bold">我的资产</text> <text class="iconfont">&#xea25;</text>
 		</view>
 		<view class="padding">
-			<view class="list-item border-bottom flex-between flex" v-for="item in coinList" :key="item.id">
+			<view class="list-item border-bottom flex-between flex" @tap="jumpTocurrencyDetail(index)" v-for="(item,index) in coinList" :key="item.id">
 				<view class="flex-row flex">
 					<view class="">
 						<image class="img" :src="item.Logo" mode=""></image>
@@ -79,7 +79,7 @@
 							折合(CNY)
 						</view>
 						<view class="">
-							{{item.Money*item.Price}}
+							{{item.Price}}
 						</view>
 					</view>
 				</view>
@@ -100,7 +100,8 @@
 		},
 
 		onLoad(options) {
-			//产品详情
+			console.log(uni.getStorageSync('token'))
+			//币种余额
 			uni.request({
 				url: this.baseUrl + "/total-balance",
 				header: {
@@ -111,8 +112,7 @@
 					if (this.$base._indexOf(res.data.status)) {
 						this.$base._isLogin()
 					} else if (res.data.status == 1) {
-						this.money = res.data.data, 4
-
+						this.money = res.data.data
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -122,7 +122,7 @@
 
 				}
 			})
-			// //我的资产列表
+			//我的资产列表
 			uni.request({
 				url: this.baseUrl + "/coin-list",
 				header: {
@@ -132,7 +132,6 @@
 					console.log(res)
 					if (res.data.status == 1) {
 						this.coinList = res.data.data
-
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -152,6 +151,7 @@
 					console.log(res)
 					if (res.data.status == 1) {
 						this.balanceList = res.data.data
+						this.set_balance();
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -162,24 +162,40 @@
 				}
 			})
 		},
-		onPullDownRefresh() {
-
-		},
 		methods: {
 			set_balance() {
 				var self = this;
-				for (var i = 0; i < this.coinList.length; i++) {
-					for (var j = 0; j < this.balanceList.length; j++) {
-						if (this.coinList[i].Id == this.balanceList[j].CoinId) {
-							this.coinList[i].Money = this.balanceList[j].Money;
-							this.coinList[i].Forzen = this.balanceList[j].Forzen;
-							this.coinList[i].Price = this.balanceList[j].Price * this.typeInfo2[j].Money;
+				for (var i = 0; i < self.coinList.length; i++) {
+					for (var j = 0; j < self.balanceList.length; j++) {
+						if (self.coinList[i].Id == self.balanceList[j].CoinId) {
+							self.coinList[i].Money = self.balanceList[j].Money;
+							self.coinList[i].Forzen = self.balanceList[j].Forzen;
+							self.coinList[i].Price = self.balanceList[j].Money * self.coinList[i].Price;
 						}
-
 					};
 				};
-				this.coinList = JSON.parse(JSON.stringify(this.coinList))
+				self.coinList = JSON.parse(JSON.stringify(self.coinList))
 				
+			},
+			jumpToTransferNum(){
+				uni.navigateTo({
+					url:"./transfer-num?money="+this.money
+				})
+			},
+			jumToQrcode(){
+				uni.navigateTo({
+					url:"./receivables-qrcode"
+				})
+			},
+			jumpToRecord(){
+				uni.navigateTo({
+					url:"./charging-record"
+				})
+			},
+			jumpTocurrencyDetail(index){
+				uni.navigateTo({
+					url:"./currency-detail?coinId="+this.coinList[index].Id+"&money="+this.coinList[index].Money+"&forzen="+this.coinList[index].Forzen+"&price="+this.coinList[index].Price
+				})
 			}
 
 		}

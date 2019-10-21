@@ -2,7 +2,5 @@
   "navigationBarTitleText": "充提记录",
   "titleNView": false,
   "animationType": "slide-in-bottom",
-  "usingComponents": {
-    "page-head2": "/components/page-head2"
-  }
+  "usingComponents": {}
 }

@@ -3,25 +3,32 @@
 		<view class="bgbox">
 
 		</view>
-		<view class="top" @tap="jumpToproblemDetail">
-			<text>修改登录密码</text><text class="iconfont icon">&#xea25;</text>
-		</view>
-		<view class="top">
-			<text>忘记登录密码
-			</text><text class="iconfont icon">&#xea25;</text>
-		</view>
+		<navigator url="./set-password">
+			<view class="top">
+				<text>修改登录密码</text><text class="iconfont icon">&#xea25;</text>
+			</view>
+		</navigator>
+		<navigator url="./set-password">
+			<view class="top">
+				<text>忘记登录密码</text>
+				<text class="iconfont icon">&#xea25;</text>
+			</view>
+		</navigator>
 		<view class="bgbox">
-		
-		</view>
-		<view class="top">
-			<text>修改交易密码
-			</text><text class="iconfont icon">&#xea25;</text>
-		</view>
-		<view class="top">
-			<text>忘记交易密码
-			</text><text class="iconfont icon">&#xea25;</text>
 		</view>
 
+		<navigator url="./set-paypassword">
+			<view class="top">
+				<text>修改交易密码
+				</text><text class="iconfont icon">&#xea25;</text>
+			</view>
+		</navigator>
+		<navigator url="./set-paypassword">
+			<view class="top">
+				<text>忘记交易密码
+				</text><text class="iconfont icon">&#xea25;</text>
+			</view>
+		</navigator>
 	</view>
 </template>
 
@@ -34,7 +41,7 @@
 			}
 		},
 		onLoad() {
-			
+
 		},
 		methods: {
 			jumpToproblemDetail() {

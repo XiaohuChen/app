@@ -24,6 +24,9 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+.font36 {
+  font-size: 36rpx;
+}
 .bgbox {
   background-color: #F8F8F8;
   height: 20rpx;
@@ -95,5 +98,48 @@
             align-items: center;
     padding: 0 26rpx;
     border-radius: 10rpx;
+}
+.prompt-box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 11;
+  background: rgba(0, 0, 0, 0.3);
+}
+.prompt-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 20;
+  width: 80%;
+  height: 380rpx;
+  max-width: 600rpx;
+  border: 2rpx solid #ccc;
+  border-radius: 8rpx;
+  -webkit-box-sizing: bordre-box;
+          box-sizing: bordre-box;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  overflow: hidden;
+  background: #fff;
+  padding: 34rpx 50rpx 56rpx;
+}
+.prompt-content .icon {
+    position: absolute;
+    right: 52rpx;
+    top: 36rpx;
+}
+.prompt-input {
+  margin-top: 80rpx;
+  width: 100%;
+  height: 88rpx;
+  background-color: #F5F5F5;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  text-align: left;
+  padding-left: 26rpx;
 }
 

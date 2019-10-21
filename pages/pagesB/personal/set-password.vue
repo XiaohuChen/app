@@ -1,39 +1,39 @@
 <template>
 	<view class="content">
-		<view class="bgbox">		
+		<view class="bgbox">
 		</view>
 		<view class="input-wrap padding">
 			<view class="">
-				<input class="input-left" type="password" placeholder="请输入原密码" placeholder-class="input-placeholder" v-model="emailNum" @input="change">
+				<input class="input-left" type="password" placeholder="请输入原密码" placeholder-class="input-placeholder" v-model="oldPassword"
+				 @input="change">
 			</view>
 			<view class="">
-				<input class="input-left" type="password" placeholder="请输入新密码" placeholder-class="input-placeholder"  >
+				<input class="input-left" type="password" placeholder="请输入新密码" placeholder-class="input-placeholder" v-model="newPassword">
 			</view>
 			<view class="">
-				<input class="input-left" type="password" placeholder="再次输入新密码" placeholder-class="input-placeholder"  >
+				<input class="input-left" type="password" placeholder="再次输入新密码" placeholder-class="input-placeholder" v-model="sureNewPassWord">
 			</view>
 		</view>
 		<view>
-			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="backupMnemonic">提交</button>	
-				<view class="font-small text-center">
-					<text class="font-gray">找回密码后24小时内无法提币</text>
-				</view>
+			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="comfirme">提交</button>
+			<view class="font-small text-center">
+				<text class="font-gray">找回密码后24小时内无法提币</text>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-
 	export default {
-		
+
 		data() {
 			return {
-				
-				emailNum: '',
-				password: '',
+				oldPassword: '',
+				newPassword: '',
+				sureNewPassWord: '',
 				opcity: 0.5,
-				check:false
-	
+				check: false
+
 			}
 		},
 		onLoad() {
@@ -43,11 +43,6 @@
 
 		},
 		methods: {
-			backupMnemonic() {
-				uni.navigateTo({
-					url: "backupMnemonic1"
-				})
-			},
 			change(e) {
 				console.log(e.detail.value.length)
 				if (e.detail.value.length >= 3) {
@@ -56,9 +51,43 @@
 					this.opcity = 0.5
 				}
 			},
-			checked(){
-				this.check =!this.check
+
+			comfirme() {
+				//修改登录密码
+				uni.request({
+					url: this.baseUrl + "/member-modify-password",
+					data: {
+						OldPassword: this.oldPassword,
+						Password: this.newPassword,
+						RepeatPassword: this.sureNewPassWord
+					},
+					method: 'POST',
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res.data)
+						if (this.$base._indexOf(res.data.status)) {
+							this.$base._isLogin()
+						} else if (res.data.status == 1) {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+							uni.navigateTo({
+								url:"./self-in"
+							})
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
+				})
 			}
+
 
 		}
 	}
@@ -101,6 +130,7 @@
 		}
 
 	}
+
 	.input-wrap {
 		margin-top: 40rpx;
 	}

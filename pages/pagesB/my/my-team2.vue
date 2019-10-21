@@ -1,40 +1,16 @@
 <template>
 	<view class="content padding">
-		<view class="middle text-center">
+		<view class="middle text-center" >
 			<view class="all">
-				<text>团队总业绩(社区收益10%)</text>
+				<text>团队总业绩(社区收益{{ratio}}%)</text>
 			</view>
 			<view class="all-num ">
-				<text class="font-bold">000000</text>  <text class="font-middle">USTD</text>
+				<text class="font-bold">{{teamAchievement}}</text>  <text class="font-middle">USTD</text>
 			</view>
 			<view class="flex-between">
-				<text>团队人数：123</text>｜<text>有效直推人数：16</text>
+				<text>团队人数：{{team}}</text>｜<text>有效直推人数：{{invite}}</text>
 			</view>
 		</view>
-		<view class="middle text-center">
-			<view class="all">
-				<text>团队总业绩(社区收益10%)</text>
-			</view>
-			<view class="all-num ">
-				<text class="font-bold">000000</text>  <text class="font-middle">USTD</text>
-			</view>
-			<view class="flex-between">
-				<text>团队人数：123</text>｜<text>有效直推人数：16</text>
-			</view>
-		</view>
-		<view class="middle text-center">
-			<view class="all">
-				<text>团队总业绩(社区收益10%)</text>
-			</view>
-			<view class="all-num ">
-				<text class="font-bold">000000</text>  <text class="font-middle">USTD</text>
-			</view>
-			<view class="flex-between">
-				<text>团队人数：123</text>｜<text>有效直推人数：16</text>
-			</view>
-		</view>
-		
-
 	</view>
 </template>
 
@@ -43,16 +19,11 @@
 
 		data() {
 			return {
-				imgUrl: '',
-				nameEn: '',
-				nameCh: '',
-				allNum: '',
-				allNumEqual: '',
-				coreId: '',
-				price: '',
-				money: '',
-				show: true,
-				password: false,
+				team:'',
+				teamAchievement:'',
+				ratio:'',
+				level:'',
+				invite:''
 			};
 		},
 		onLoad() {
@@ -60,7 +31,6 @@
 				this.$base._isLogin()
 			}
 			this.initData()
-
 		},
 		onReady() {
 		},
@@ -72,25 +42,24 @@
 		},
 		methods: {
 			initData() {
-				//core首页
+				//我的团队上面蓝色框框的数据
 				uni.request({
-					url: this.baseUrl + "/core-list",
+					url: this.baseUrl + "/member-invite",
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
 						console.log(res.data)
-						if (res.data.status == 20003) {
+						if (this.$base._indexOf(res.data.status)) {
 							this.$base._isLogin()
 						} else if (res.data.status == 1) {
-							this.imgUrl = res.data.data.Logo
-							this.nameEn = res.data.data.EnName
-							this.nameCh = res.data.data.FullName
-							this.coreId = res.data.data.Id
-							this.price = res.data.data.Price
-							this.money = res.data.data.Money
+							this.team = res.data.data.Team
+							this.teamAchievement = res.data.data.TeamAchievement
+							this.ratio = res.data.data.Ratio
+							this.level = res.data.data.Level
+							this.invite = res.data.data.Invite
+							
 						} else {
 							uni.showToast({
 								title: res.data.message,
@@ -124,6 +93,7 @@
 					this.password = false
 				}
 			},
+			
 		}
 	}
 </script>
