@@ -3,7 +3,10 @@
 		<view class="user-wrap">
 			<view class="user-bg">
 				<view class="top text-center">
-					<view class="hot" v-show="status==1" @tap="unsealing">
+					<view class="hot" v-if="status==0" :style="{background:showLevelBgc(planLevel)}">
+						V{{planLevel}}
+					</view>
+					<view class="hot" v-else @tap="unsealing">
 						{{status==0?"":"点击解封"}}
 					</view>
 					<image class="head-img" :src="avatar" mode=""></image>
@@ -11,7 +14,7 @@
 						{{nickname}} <text class="iconfont" @tap="jumpToPersonalInfo">&#xe64a;</text>
 					</view>
 					<view class="flex-around">
-						<view class="">
+						<view class="" @tap="jumpToInvite">
 							<view class="">
 								<image class="choice-img" src="../../../static/images/pagesA/my/re-name.png" mode=""></image>
 							</view>
@@ -19,7 +22,7 @@
 								邀请好友
 							</view>
 						</view>
-						<view class="">
+						<view class="" @tap="jumpToRealName">
 							<view class="">
 								<image class="choice-img" src="../../../static/images/pagesA/my/invite.png" mode=""></image>
 							</view>
@@ -27,15 +30,15 @@
 								实名认证
 							</view>
 						</view>
-						<view class="">
+						<view class="" @tap="jumpToMyBill">
 							<view class="">
 								<image class="choice-img" src="../../../static/images/pagesA/my/film.png" mode=""></image>
 							</view>
-							<navigator url="./my-bill">
-								<view class="font22">
-									我的账单
-								</view>
-							</navigator>
+
+							<view class="font22">
+								我的账单
+							</view>
+
 						</view>
 					</view>
 				</view>
@@ -51,36 +54,50 @@
 		</navigator>
 
 		<view class="block item-wrap ">
-			<navigator url="./binding-phone">
-				<view class="item flex-between border-bottom">
+			
+				<view @tap="jumpToBindingPhone" class="item flex-between border-bottom">
 					<view class="flex">
 						<i class="iconfont font-big  icon-RectangleCopy2"></i>
 						<text>绑定手机</text>
 					</view>
 					<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
 				</view>
-			</navigator>
-			<view class="item flex-between border-bottom">
+				
+				<!-- <view @tap="jumpToBindingAddr" class="item flex-between border-bottom">
+					<view class="flex">
+						<i class="iconfont font-big  icon-dingwei"></i>
+						<text>绑定地址</text>
+					</view>
+					<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
+				</view> -->
+			
+			<!-- 	<view class="item flex-between border-bottom">
+				
 				<view class="flex">
 					<i class="iconfont font-big  icon-bangzhu"></i>
 					<text>帮助与反馈</text>
 				</view>
 				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
-			<view class="item flex-between border-bottom">
-				<view class="flex">
-					<i class="iconfont font-big  icon-RectangleCopy3"></i>
-					<text>用户协议</text>
+				
+			</view> -->
+			<navigator url="./userform">
+				<view class="item flex-between border-bottom">
+					<view class="flex">
+						<i class="iconfont font-big  icon-RectangleCopy3"></i>
+						<text>用户协议</text>
+					</view>
+					<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
 				</view>
-				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
-			<view class="item flex-between border-bottom">
-				<view class="flex">
-					<i class="iconfont font-big  icon-wode"></i>
-					<text>关于我们</text>
+			</navigator>
+			<navigator url="./aboutus">
+				<view class="item flex-between border-bottom">
+					<view class="flex">
+						<i class="iconfont font-big  icon-wode"></i>
+						<text>关于我们</text>
+					</view>
+					<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
 				</view>
-				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
+			</navigator>
 		</view>
 		<view class="" v-show="status==1">
 			<view class="font-red text-center font22 margin-top">
@@ -90,26 +107,35 @@
 				解封后收益正常产生
 			</view>
 		</view>
-		
+		<evc-tabbar :tag="'my'" :fontColor4="fontColor4" :myImg="myImgSelect"></evc-tabbar>
+
+
 	</view>
 </template>
 
 <script>
+	import evcTabbar from '@/components/evcTabbar.vue'
 	export default {
+		components: {
+			evcTabbar
+		},
 		data() {
 			return {
+				fontColor4: '#0099FF',
+				myImgSelect: '../../../static/images/evctabbar/myselect.png',
 				nickname: '',
 				avatar: '',
-				status:''
+				status: '',
+				planLevel: '',
+				authState: '',
+				i: 1,
+				isBindPhone:''
 			}
 		},
-		onNavigationBarButtonTap(e) {
-			if (e.index == 0) {
-				uni.navigateTo({
-					url: '../message/message'
-				})
-			}
+		onBackPress(options) {
+			
 		},
+	
 
 		onLoad() {
 			//获取用户信息
@@ -121,14 +147,23 @@
 				},
 				success: (res) => {
 					console.log(res.data)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
 						this.nickname = res.data.data.NickName
-						this.avatar = res.data.data.Avatar
-						this.status = res.data.data.IsForbidden
-						this.status = 1
+						console.log('111111111111111111'+uni.getStorageSync('domain'))
 						
+						
+						this.avatar = uni.getStorageSync('domain') + res.data.data.Avatar
+						this.status = res.data.data.IsForbidden
+						this.planLevel = res.data.data.PlanLevel
+
+						//用户实名认证状态
+						this.authState = res.data.data.AuthState
+						//绑定手机号的状态
+						this.isBindPhone = res.data.data.IsBindPhone
+
+
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -138,26 +173,88 @@
 				}
 			})
 		},
+		onBackPress(options) {
+			var idtag=1
+			console.log(idtag)
+			if (idtag==1) {
+				console.log('222')
+				uni.switchTab({
+					url:"../../wallet/wallet"
+				})
+				return true;
+			}
+		},
 		methods: {
-			jumpToPersonalInfo() {
+			jumpToBindingPhone(){
+				if(this.isBindPhone!=1){
+					uni.redirectTo({
+						url:"./binding-phone"
+					})
+				}else {
+					uni.navigateTo({
+						url:"./hasBindingPhone"
+					})
+				}
+			},
+			jumpToBindingAddr(){
 				uni.navigateTo({
+					url:"./binding-addr"
+				})
+			},
+			showLevelBgc(level) {
+				if (level == 1) {
+					return 'linear-gradient(#FF727C, #FFA8AE)'
+				} else if (level == 2) {
+					return 'linear-gradient(#7FCCFF, #0099FF)'
+				} else if (level == 3) {
+					return 'linear-gradient(#FFC744, #FF9100)'
+				}
+			},
+			jumpToInvite() {
+				uni.navigateTo({
+					url: "./invite"
+				})
+				
+			},
+			jumpToPersonalInfo() {
+				uni.redirectTo({
 					url: "./personal-info"
 				})
 			},
-			unsealing(){
+			unsealing() {
 				uni.navigateTo({
-					url:"./unsealing"
+					url: "./unsealing"
 				})
-				
+
+			},
+			jumpToRealName() {
+				console.log(this.authState)
+				if (this.authState == 0) {
+					uni.redirectTo({
+						url: "./real-name"
+					})
+				} else {
+					uni.navigateTo({
+						url: './examine?authState=' + this.authState
+					})
+				}
+
+
+			},
+			jumpToMyBill() {
+				uni.navigateTo({
+					url: "./my-bill"
+				})
 			}
 		}
 	}
 </script>
 
 <style scoped>
-	.font22{
+	.font22 {
 		font-size: 22rpx;
 	}
+
 	.user-wrap {
 		background-color: #0099FF;
 		height: 400upx;

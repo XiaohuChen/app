@@ -1,5 +1,5 @@
 <template>
-	<!-- 充提记录 -->
+	<!-- 我的账单 -->
 	<view class="content">
 		<view class="nav">
 			<view class="nav-text" v-for="(item,index) in list" :key="item.id" :class="currentNumber == index ? 'active' : ''"
@@ -14,19 +14,16 @@
 			<view class="list-item" v-for="(item,index) in nameList" :key="index" @tap="jumpToRecorde(index)">
 				<view class="">
 					<view class="name-en">
-						{{item.title}}
+						{{item.MoldTitle}}
 					</view>
 					<view class="name-ch">
-						{{item.time}}
+						{{$base1._formatDate(item.AddTime)}}
 					</view>
 				</view>
 				<view class="list-item-right">
 					<view class="">
 						<view class="name-en">
-							{{item.money}}
-						</view>
-						<view class="name-ch desc">
-							{{item.status}}
+							{{item.Money}} {{item.CoinName}}
 						</view>
 					</view>
 					<view class="iconfont icon">
@@ -46,26 +43,21 @@
 				statusChange: '',
 				curPage: 1,
 				status: 0,
-				nameList: [],
+				nameList: [
+					
+				],
 				id: '',
 				acid:'',
-				list: [{
-						title: "全部"
-					},
-					{
-						title: "充值"
-					},
-					{
-						title: "提现"
-					}
-				]
+				list: []
+				
 			};
 		},
 		onLoad(options) {
 			if(!uni.getStorageSync("token")&&!uni.getStorageSync("SecretKey")){
-				this.$base._isLogin()
+				this.$base1._isLogin()
 			}
 			this.getCoreDetail()
+			this.getfinacemolds()
 		},
 		onPullDownRefresh() {
 			this.getCoreDetail()
@@ -74,23 +66,18 @@
 			  }, 1000);
 		  },
 		methods: {
-			currentInfo(index) {
-				this.currentNumber = index;
-				console.log(this.currentNumber)
-				this.status = this.currentNumber
-				//我的理财列表动态 显示
+			getfinacemolds(){
+				//
 				uni.request({
-					url: this.baseUrl + "/investment-list?status=" + this.status,
+					url: this.baseUrl + "/finace-molds",
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
-						console.log(res)
+						console.log(res.data)
 						 if (res.data.status == 1) {
-							this.nameList = res.data.data.data
-							console.log(this.nameList)
+							 this.list = res.data.data
 						} else {
 							uni.showToast({
 								title: res.data.message,
@@ -100,11 +87,16 @@
 					}
 				})
 			},
-			//我的理财列表 显示全部
-			getCoreDetail() {
+			currentInfo(index) {
+				
+				this.currentNumber = index;
+				
+				console.log(this.currentNumber)
+				console.log(this.list[index].id)
 				uni.request({
-					url: this.baseUrl + "/recharge-withdraw",
+					url: this.baseUrl + "/finace-list",
 					data:{
+						Type:this.list[index].id,
 						page:1,
 						count:10000
 					},
@@ -114,10 +106,40 @@
 					},
 					success: (res) => {
 						console.log(res.data)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
+						if (this.$base1._indexOf(res.data.status)) {
+							this.$base1._isLogin()
 						} else  if (res.data.status == 1) {
-							// this.nameList = res.data.data.data
+							this.nameList = res.data.data.list
+							
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
+				})
+				
+			},
+			//资金变动列表 显示全部
+			getCoreDetail() {
+				uni.request({
+					url: this.baseUrl + "/finace-list",
+					data:{
+						Type:0,
+						page:1,
+						count:10000
+					},
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res.data)
+						if (this.$base1._indexOf(res.data.status)) {
+							this.$base1._isLogin()
+						} else  if (res.data.status == 1) {
+							this.nameList = res.data.data.list
 							
 						} else {
 							uni.showToast({
@@ -154,24 +176,30 @@
 	}
 	.active {
 		color: #0099FF;
+		border-bottom: 2rpx solid #007AFF;
 	}
 
 	.content {
+		
 		box-sizing: border-box;
 		font-size: 30rpx;
 		color: #333;
 		
 		.nav {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-
+			overflow-x: scroll;
+			white-space: nowrap;
+			// display: flex;
+			// flex-direction: row;
+			// justify-content: space-between;
+			
 			.nav-text {
+				display: inline-block;
 				height: 88rpx;
 				line-height: 88rpx;
-				width: 150rpx;
+				// width: 100%;
 				background-color: #fff;
 				text-align: center;
+				margin: 0 20rpx;
 			}
 		}
 

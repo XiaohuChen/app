@@ -3,7 +3,7 @@
 		<view class="user-wrap">
 			<view class="user-bg">
 				<view class="tx"><image src="../../static/images/tx.png"></image></view>
-				<view class="address text-overflow">asdiogahsdnkgajsiodfhogahsdnkga</view>
+				<view class="address text-overflow">{{app._addressMethod(wallet.address)}}</view>
 			</view>
 		</view>
 		<navigator class="block flex-between item" url="../wallet/manage">
@@ -14,36 +14,38 @@
 			<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
 		</navigator>
 		<view class="block item-wrap">
-			<view class="item flex-between">
+			<navigator class="item flex-between" url="../question/question">
 				<view class="flex">
 					<i class="iconfont icon-bangzhu"></i>
 					<text>帮助与反馈</text>
 				</view>
 				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
-			<view class="item flex-between">
+			</navigator>
+			<navigator class="item flex-between" url="about?type=1">
 				<view class="flex">
 					<i class="iconfont icon-bianji"></i>
 					<text>用户协议</text>
 				</view>
 				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
-			<view class="item flex-between">
+			</navigator>
+			<navigator class="item flex-between" url="about?type=2">
 				<view class="flex">
 					<i class="iconfont icon-zhuye"></i>
 					<text>关于我们</text>
 				</view>
 				<i class="iconfont icon-return-copy-copy-copy font-gray"></i>
-			</view>
+			</navigator>
 		</view>
 	</view>
 </template>
 
 <script>
+	import wallet from "@/common/js/wallet.js";
 	export default {
 		data() {
 			return {
-				
+				pageHide: false,
+				wallet: {}
 			}
 		},
 		onNavigationBarButtonTap(e) {
@@ -52,6 +54,18 @@
 					url: '../message/message'
 				})
 			}
+		},
+		onHide() {
+			this.pageHide = true;
+		},
+		onShow() {
+			if(this.pageHide){
+				this.pageHide = false;
+				this.wallet = this.$Wallet.getCurrentWallet();
+			}
+		},
+		onLoad() {
+			this.wallet = this.$Wallet.getCurrentWallet();
 		},
 		methods: {
 			

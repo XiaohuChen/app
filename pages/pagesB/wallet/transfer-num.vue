@@ -3,27 +3,27 @@
 		<view class="flex-between top padding">
 			<view class="flex-row flex">
 				<view class="">
-					<image class="logo-img" src="../../../static/images/BTC@2x.png" mode=""></image>
+					<image class="logo-img" :src="array[index].logo" mode=""></image>
 				</view>
 				<view class="font-middle font-bold">
 					{{array[index].enName}}
 				</view>
 			</view>
 			<picker mode="selector" @change="bindPickerChange" :value="index" :range="arrayenName">
-			<view class="">
-				<text class="font-gray font22">
-					切换币种
-				</text>
-				<text class="iconfont">
-					&#xea25;
-				</text>
-			</view>
+				<view class="">
+					<text class="font-gray font22">
+						切换币种
+					</text>
+					<text class="iconfont">
+						&#xea25;
+					</text>
+				</view>
 			</picker>
 		</view>
 		<view class="bgbox "></view>
 		<view class="list padding">
 			<view class="list-top">
-				<text>转账数量</text><text class="font22">BTC可用: {{allmoneyNum}}</text>
+				<text>转账数量</text><text class="font22">{{array[index].enName}}可用: {{$base1._toFixed(allmoneyNum,4) }}</text>
 			</view>
 			<view class="list-input font-small">
 				<input class="font-small" type="text" value="" v-model="money" placeholder="输入转账数量" />
@@ -49,7 +49,7 @@
 
 		</view>
 		<view class="font-gray font22 padding">
-			手续费：0.00051968 BTC≈1.3502 CNY
+			手续费：{{money*chargeFee}} {{array[index].enName}}≈{{money*chargeFee*7}} CNY
 		</view>
 		<view class="margin-top">
 			<button class="blue" type="primary" @tap="sureTransfer">转账</button>
@@ -66,7 +66,7 @@
 				<button class="blue" @tap="confirm">提交密码</button>
 			</view>
 		</view>
-		
+
 		<!-- 输入验证码的弹窗 -->
 		<view class="prompt-box" v-show="showCodeMask" @tap="closeCodeMask"></view>
 		<view class="prompt-content" v-show="showCodeMask">
@@ -74,13 +74,15 @@
 				安全验证
 			</view>
 			<view class="font-gray font-small text-left">验证码
-				
+
 			</view>
-			<input class="prompt-input" type="text" password v-model="autoCode" placeholder="请填写验证码" />
-			<view class="">
-				获取验证码
+			<view class="flex-row margin-top padding-top">
+
+				<input class="input-left" placeholder="请输入短信验证码" placeholder-class="input-placeholder" v-model="autoCode">
+				<button class="get-indentify" :disabled="nosendCode" @click="sendCode">{{sendbtn.text}}</button>
 			</view>
-			
+
+
 			<view class="margin-top">
 				<button class="blue" @tap="surePay">确认支付</button>
 			</view>
@@ -102,22 +104,49 @@
 				allmoneyNum: '',
 				id: '',
 				array: [],
-				coinList:[],
-				arrayenName:[],
-				index:0,
-				memo:'',
-				password:'',
-				autoCode:'',
-				PayPassword:'',
-				showCodeMask:false
+				coinList: [],
+				arrayenName: [],
+				index: 0,
+				memo: '',
+				password: '',
+				autoCode: '',
+				PayPassword: '',
+				showCodeMask: false,
+				chargeFee: '',
+				nosendCode: false,
+				sendbtn: {
+					text: '获取验证码',
+					codeTime: 60
+				},
+				userPhone:''
 			}
 
 		},
 		onLoad(options) {
 			if (!uni.getStorageSync("token") && !uni.getStorageSync("SecretKey")) {
-				this.$base._isLogin()
+				this.$base1._isLogin()
 			}
-			this.allmoneyNum = options.money
+			//获取用户手机号
+			uni.request({
+				url: this.baseUrl + "/member-info",
+				header: {
+					//除注册登录外其他的请求都携带用户token和秘钥
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res.data)
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
+					} else if (res.data.status == 1) {
+						this.userPhone = res.data.data.Phone
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: "none"
+						})
+					}
+				}
+			})
 			//我的资产列表
 			uni.request({
 				url: this.baseUrl + "/coin-list",
@@ -126,18 +155,52 @@
 				},
 				success: (res) => {
 					console.log(res)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
 						this.coinList = res.data.data
-						var self = this
-						for(var i = 0; i < self.coinList.length; i++){
-							var coinListName = {enName:self.coinList[i].EnName,id:self.coinList[i].Id}
-							self.array.push(coinListName)
-						}		
-						for(var j=0 ; j<self.array.length;j++){
-							this.arrayenName.push(this.array[j].enName)
-						}
+						//获取所有资产余额
+						//获取币种余额
+						uni.request({
+							url: this.baseUrl + "/coin-balance",
+							header: {
+								Authorization: uni.getStorageSync('token')
+							},
+							success: (res) => {
+								console.log(res)
+								if (res.data.status == 1) {
+									this.balanceList = res.data.data
+									this.set_balance();
+									
+									var self = this
+									for (var i = 0; i < self.coinList.length; i++) {
+										console.log(self.coinList[i].Money)
+										if(self.coinList[i].Money){
+											var coinListName = {
+												enName: self.coinList[i].EnName,
+												id: self.coinList[i].Id,
+												logo: self.coinList[i].Logo
+											}
+											self.array.push(coinListName)
+										}
+										
+									}
+									for (var j = 0; j < self.array.length; j++) {
+										this.arrayenName.push(this.array[j].enName)
+									}
+									
+									this.getChargeFee()
+									this.getsingleBanlence()
+									
+								} else {
+									uni.showToast({
+										title: res.data.message,
+										icon: 'none'
+									})
+								}
+						
+							}
+						})
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -146,33 +209,88 @@
 					}
 				}
 			})
-
 		},
 		methods: {
-			bindPickerChange(e) {
-				this.index = e.target.value
-				console.log(this.index)
+			set_balance() {
+				var self = this;
+				for (var i = 0; i < self.coinList.length; i++) {
+					for (var j = 0; j < self.balanceList.length; j++) {
+						if (self.coinList[i].Id == self.balanceList[j].CoinId) {
+							self.coinList[i].Money = self.balanceList[j].Money;
+							self.coinList[i].Forzen = self.balanceList[j].Forzen;
+							self.coinList[i].Price = (parseFloat(self.balanceList[j].Money) + parseFloat(self.balanceList[j].Forzen)) * self.coinList[i].Price;
+						}
+					};
+				};
+				self.coinList = JSON.parse(JSON.stringify(self.coinList))
+			
 			},
-			allmoney() {
-				this.money = this.allmoneyNum
+			//转账获取验证码
+			sendCode() {
+				
+				if(this.userPhone){
+					this.nosendCode = true
+					uni.request({
+						url: this.baseUrl + "/sms-withdraw",
+						method: "POST",
+						header: {
+							//除注册登录外其他的请求都携带用户token和秘钥
+							Authorization: uni.getStorageSync('token')
+						},
+						success: (res) => {
+							console.log(res.data)
+							if (res.data.status == 1) {
+								this.sendMsgCodeTimer()
+								uni.showToast({
+									title: res.data.message
+								})
+							} else {
+								this.nosendCode =false
+								uni.showToast({
+									title: res.data.message,
+									icon: "none"
+								})
+							}
+						}
+					})
+				}else{
+					uni.showModal({
+					    title: '提示',
+					    content: '您还未绑定 手机号点击确认绑定手机号',
+					    success: function (res) {
+					        if (res.confirm) {
+					            uni.navigateTo({
+					            	url:"../personal/binding-phone?pages=1"
+					            })
+					        } else if (res.cancel) {
+					            console.log('用户点击取消');
+					        }
+					    }
+					});
+				}				
 			},
-			sureTransfer() {
-				this.showPinMask = true
+			sendMsgCodeTimer() {
+				this.timerId = setInterval(() => {
+					let codeTime = this.sendbtn.codeTime;
+					codeTime--;
+					this.sendbtn.codeTime = codeTime;
+					this.sendbtn.text = codeTime + "S";
+					if (codeTime < 1) {
+						clearInterval(this.timerId);
+						this.sendbtn.text = "重新获取";
+						this.nosendCode = false
+						this.sendbtn.codeTime = 60;
+					}
+				}, 1000);
 			},
-			closePinMask() {
-				this.showPinMask = false
-			},
-			confirm() {
-				this.showCodeMask = true
-			},
-			closeCodeMask(){
-				this.showCodeMask = false
-			},
-			surePay(){
-				//点击确定发送资金验证码，验证成功后提现
+			getChargeFee() {
+				//id获取币种
+				console.log(this.array[this.index].id)
 				uni.request({
-					url: this.baseUrl + "/sms-withdraw",
-					method:'POST',
+					url: this.baseUrl + "/single-coin",
+					data: {
+						Id: this.array[this.index].id,
+					},
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
 						Authorization: uni.getStorageSync('token')
@@ -180,67 +298,120 @@
 					success: (res) => {
 						console.log(res.data)
 						if (res.data.status == 1) {
-							//请求成功之后转账
-							uni.request({
-								url: this.baseUrl + "/recharge",
-								data:{
-									Id:this.array[this.index].id,
-									Money:this.money,
-									Address:this.address,
-									Memo:this.memo,
-									AuthCode:this.autoCode,
-									PayPassword:this.password
-								},
-								method:'POST',
-								header: {
-									//除注册登录外其他的请求都携带用户token和秘钥
-									Authorization: uni.getStorageSync('token')
-								},
-								success: (res) => {
-									// console.log(res.data)
-									if (res.data.status == 1) {
-										
-									} else {
-										//提示余额不足
-										uni.showToast({
-											title: res.data.message,
-											icon: "none"
-										})
-										uni.showModal({
-											title: '转账失败',
-											content: "点击确认继续转账",
-											success: function(res) {
-												if (res.confirm) {
-													uni.redirectTo({
-														url: "./currency-detail"
-													})
-												} else if (res.cancel) {
-													uni.redirectTo({
-														url: "./currency-detail"
-													})
-												}
-											}
-										});
-									}
-								}
-							})
+							//获取转账手续费
+							this.chargeFee = res.data.data.WithDrawFee
+							console.log(this.chargeFee)
 						} else {
-							//提示余额不足
+
 							uni.showToast({
 								title: res.data.message,
 								icon: "none"
 							})
+
+						}
+					}
+				})
+				
+			},
+			getsingleBanlence(){
+				//id币种可用余额
+				uni.request({
+					url: this.baseUrl + "/coin-single-balance",
+					data: {
+						Id: this.array[this.index].id,
+					},
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						// console.log(res.data)
+						if (res.data.status == 1) {
+							//获取转账手续费
+							this.allmoneyNum = res.data.data.Money
+							console.log(this.allmoneyNum)
+						} else {
+				
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+				
+						}
+					}
+				})
+			},
+			bindPickerChange(e) {
+				this.index = e.target.value
+				console.log(this.index)
+
+				this.getChargeFee()
+				this.getsingleBanlence()
+			},
+			allmoney() {
+				this.money = this.allmoneyNum
+			},
+			sureTransfer() {
+				if(this.money){
+					this.showPinMask = true
+				}else{
+					uni.showToast({
+						title:"请输入转账数量",
+						icon:"none"
+					})
+				}
+				
+			},
+			closePinMask() {
+				this.showPinMask = false
+			},
+			confirm() {
+				this.showCodeMask = true
+			},
+			closeCodeMask() {
+				this.showCodeMask = false
+			},
+
+			surePay() {
+				//转账
+				uni.request({
+					url: this.baseUrl + "/recharge",
+					data: {
+						Id: this.array[this.index].id,
+						Money: this.money,
+						Address: this.address,
+						Memo: this.memo,
+						AuthCode: this.autoCode,
+						PayPassword: this.password
+					},
+					method: 'POST',
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						// console.log(res.data)
+						if (res.data.status == 1) {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+							uni.navigateTo({
+								url:"./charging-record"
+							})
+						} else {
+							console.log(res.data.message)
 							uni.showModal({
-								title: '转账失败',
+								title: res.data.message,
 								content: "点击确认继续转账",
 								success: function(res) {
 									if (res.confirm) {
 										uni.redirectTo({
-											url: "./currency-detail"
+											url: "./wallet"
 										})
 									} else if (res.cancel) {
 										uni.redirectTo({
-											url: "./currency-detail"
+											url: "./wallet"
 										})
 									}
 								}
@@ -249,23 +420,33 @@
 					}
 				})
 			},
-			jumpToForgetPassword(){
+			jumpToForgetPassword() {
 				uni.navigateTo({
-					url:"../login/forgetPassword"
+					url: "../login/forgetPassword"
 				})
 			}
-			
+
 		}
 	}
 </script>
 
 <style lang="scss">
-	.font36{
+	.font36 {
 		font-size: 36rpx;
 	}
+
 	.bgbox {
 		background-color: #F8F8F8;
 		height: 20rpx;
+	}
+
+	.get-indentify {
+		height: 70rpx;
+		line-height: 70rpx;
+		width: 180rpx;
+		padding: 0;
+		border: none;
+		color: #007AFF;
 	}
 
 	.content {
@@ -274,6 +455,7 @@
 		color: #333;
 		background-color: #fff;
 		height: 1334rpx;
+
 		.top {
 			font-size: 30rpx;
 			margin-top: 20rpx;
@@ -316,6 +498,7 @@
 		}
 
 	}
+
 	.prompt-box {
 		position: absolute;
 		left: 0;
@@ -325,7 +508,7 @@
 		z-index: 11;
 		background: rgba(0, 0, 0, 0.3);
 	}
-	
+
 	.prompt-content {
 		position: absolute;
 		left: 50%;
@@ -341,15 +524,15 @@
 		overflow: hidden;
 		background: #fff;
 		padding: 34rpx 50rpx 56rpx;
-	
+
 		.icon {
 			position: absolute;
 			right: 52rpx;
 			top: 36rpx;
 		}
-	
+
 	}
-	
+
 	.prompt-input {
 		margin-top: 80rpx;
 		width: 100%;

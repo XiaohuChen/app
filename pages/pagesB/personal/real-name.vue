@@ -1,29 +1,24 @@
 <template>
 	<view class="content">
-		<uni-steps class="steps1" :options="list1" :active="active" :activeColor="activeColor" />
 		
 		<view class="input-wrap">
 			<view>
 				<view class=" font-middle margin-top">
 					姓名
 				</view>
-				<input class="input-num margin-top" placeholder="请输入真实姓名" placeholder-class="input-placeholder" v-model="emailNum" @input="change">
+				<input class="input-num margin-top" placeholder="请输入真实姓名" placeholder-class="input-placeholder" v-model="realname" @input="change">
 			</view>
 			<view>
 				<view class="font-middle margin-top">
 					身份证号
 				</view>
 				
-				<input class="input-num margin-top"  placeholder="请输入身份证号" placeholder-class="input-placeholder" v-model="password">
+				<input class="input-num margin-top"  placeholder="请输入身份证号" placeholder-class="input-placeholder" v-model="indentifyCardNum">
 			</view>
-			
-
 		</view>
 		<view>
-			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="backupMnemonic">下一步</button>
-		
+			<button class="blue" hover-class="none" :style="{opacity:opcity}" @click="comfirme">下一步</button>
 		</view>
-
 	</view>
 </template>
 
@@ -36,33 +31,31 @@
 		},
 		data() {
 			return {
-				activeColor: "#4C70FF",
-				list1: [{
-					title: '',desc:'请填写身份信息'
-				}, {
-					title: '',desc:'请上传身份证反面'
-				}],
-				active: 3,
-				emailNum: '',
-				password: '',
+				
+				realname: '',
+				indentifyCardNum: '',
 				opcity: 0.5
 			}
 		},
 		onLoad() {
-
+			//判断用户认证状态，如果已认证提示用户认证状态
+			
 		},
 		onReady() {
 
 		},
 		methods: {
-			backupMnemonic() {
+			comfirme() {
+				//输入姓名身份证号
+				console.log(this.indentifyCardNum)
 				uni.navigateTo({
-					url: "backupMnemonic1"
+					url:"./real-photo?name="+this.realname
 				})
+				uni.setStorageSync('indentifyCardNum',this.indentifyCardNum)
 			},
 			change(e) {
 				console.log(e.detail.value.length)
-				if (e.detail.value.length >= 3) {
+				if (e.detail.value.length >=1) {
 					this.opcity = 1
 				} else {
 					this.opcity = 0.5
@@ -106,7 +99,7 @@
 	.input-num{
 		background-color: rgba(229, 245, 255, 1);
 		height: 100rpx;
-		font-size: 12rpx;
+		font-size: 24rpx;
 		border-radius: 10rpx;
 		padding-left: 20rpx;
 	}

@@ -4,7 +4,7 @@
 			<!-- 轮播 -->
 			<swiper class="swiper" :autoplay="true" :interval="3000" :duration="1000" :current="swiperCurrent" @change="changeSwiper">
 				<swiper-item v-for="item in swiperImg" :key="item.id">
-					<image class="swiper-item" :src="item.Img" mode="widthFix"></image>
+					<image class="swiper-item" :src="domain+item.Img" mode="widthFix"></image>
 				</swiper-item>
 			</swiper>
 			<!-- 轮播指示点样式修改 -->
@@ -14,25 +14,36 @@
 				</block>
 			</view>
 		</view>
-		<view class="notice">
-			<text class="iconfont icon1">&#xe63f;</text>
-			即将上线！
+		<!-- 公告轮播 -->
+		<view class="flex-row margin-top" @tap="jumpToNoticeDetail">
+			<text class="iconfont icon2">&#xe63f;</text>
+			<swiper class="notice text-overflow" @change="changeNoticeSwiper" autoplay="true" circular="true" interval="6000">
+				<swiper-item v-for="(item, index) in noticeList" :key="index">
+					{{item.Title}}
+				</swiper-item>
+			</swiper>
 		</view>
+
+
+		<!-- <view class="notice">
+			<text class="iconfont icon2">&#xe63f;</text>
+			{{title}}
+		</view> -->
 		<view class="recommend">
 			热门产品
 		</view>
 		<view class="recommend-product" v-for="(item,index) in productList" :key="item.id" @tap="jumpToProductDetail(index)">
-			<view class="hot">
+			<view class="hot" :style="{background:showLevelBgc(item.NeedLevel)}">
 				V{{item.NeedLevel}}
 			</view>
 			<view class="title">
 				{{item.Name}}
 			</view>
 			<view>
-				<text class="percent">{{ $base._toFixed(item.Ratio,4) }}%</text><text class="font-gray">月利率</text>
+				<text class="percent">{{ $base1._toFixed(item.Ratio*30*100,2) }}%</text><text class="font-gray">月利率</text>
 			</view>
 			<view class="profit">
-				投入金额：{{ $base._toFixed(item.Number,4) }}USTD
+				投入金额：{{ $base1._toFixed(item.Number,4) }}USDT
 			</view>
 		</view>
 		<view class="choice-type" @tap="seeAll">
@@ -48,15 +59,15 @@
 						{{item.Name}}
 					</view>
 					<view class="desc">
-						{{item.State}}
+						{{showStatus(item.State)}}
 					</view>
 				</view>
 				<view class="">
-					<text class="percent percent-small">{{item.Ratio}}%</text> <text class="font-gray">年利率</text>
+					<text class="percent percent-small">{{$base1._toFixed(item.Ratio*30*100,2) }}%</text> <text class="font-gray">月利率</text>
 				</view>
 				<view class="title">
-					<text class="font-gray">投入金额:{{item.Number}}</text>
-					<button class="blue detail-btn" hover-class="none" >详情</button>
+					<text class="font-gray">投入金额:{{$base1._toFixed(item.Number,4)}}USDT</text>
+					<button class="blue detail-btn" hover-class="none">详情</button>
 				</view>
 				<view class="font-gray">
 					周期:10天
@@ -64,27 +75,23 @@
 			</view>
 		</view>
 		<uni-load-more :status="loadingType"></uni-load-more>
+		<evc-tabbar :tag="'index'" :fontColor1="fontColor1" :indexImg="indexImgSelect" :disabled="disabled"></evc-tabbar>
 	</view>
 </template>
 
 <script>
+	import evcTabbar from '@/components/evcTabbar.vue'
 	import UniLoadMore from '@/components/uni-load-more.vue'
 	export default {
 		components: {
-			UniLoadMore
+			UniLoadMore,
+			evcTabbar
 		},
 		data() {
 			return {
-				swiperImg: [{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					},
-					{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					},
-					{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					}
-				],
+				swiperImg: [],
+				fontColor1: '#0099FF',
+				indexImgSelect: '../../../static/images/evctabbar/indexselect.png',
 				current: 0,
 				swiperCurrent: 0,
 				productList: [],
@@ -92,17 +99,49 @@
 				productList2: [],
 				curPage: 1,
 				loadingType: 'more',
-				total1:0,
-				total2:0,
+				total1: 0,
+				total2: 0,
+				levelBgc: '',
+				noticeList: [],
+				disabled: false,
+				noticeindex: 0,
+				domain: ''
 			};
 		},
 		onLoad() {
+
+			this.domain = uni.getStorageSync('domain')
+			console.log(this.domain)
 			//此页做下拉刷新跟上拉加载
 			var _self = this
-			if(!uni.getStorageSync("token")){
-				this.$base._isLogin()
+			if (!uni.getStorageSync("token")) {
+				this.$base1._isLogin()
+				return
 			}
+			//获取首页banner
+			uni.request({
+				url: this.baseUrl + "/banner-list",
+				header: {
+					Authorization: uni.getStorageSync('token')
+				},
+				success: (res) => {
+					console.log(res)
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
+						return
+					} else if (res.data.status == 1) {
+						this.swiperImg = res.data.data
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+
+				}
+			})
 			_self.getProduct()
+			console.log(uni.getStorageSync("token"))
 		},
 		onPageScroll(e) {
 			//兼容iOS端下拉时顶部漂移
@@ -117,16 +156,29 @@
 		onPullDownRefresh() {
 			this.curPage = 1;
 			this.getProduct('refresh')
-			
 		},
 		//上拉加载更多
 		onReachBottom() {
 			this.curPage++;
 			this.getProduct('add');
 		},
-
-		onNavigationBarButtonTap() {
-			console.log("22222")
+		onBackPress(options) {
+			var idtag = 1
+			console.log(idtag)
+			if (idtag == 1) {
+				console.log('222')
+				uni.switchTab({
+					url: "../../wallet/wallet"
+				})
+				return true;
+			}
+		},
+		onNavigationBarButtonTap(e) {
+			if (e.index == 1) {
+				uni.navigateTo({
+					url: "./profit"
+				})
+			}
 		},
 
 		methods: {
@@ -138,12 +190,12 @@
 						return;
 					}
 					this.loadingType = 'loading';
-					
+
 				} else {
 					this.loadingType = 'more'
 				}
 				if (type === 'refresh') {
-					
+
 					this.productList2 = [];
 				}
 				//产品列表
@@ -153,22 +205,44 @@
 						page: 1,
 						count: 100000
 					},
-					header:{
-						Authorization:uni.getStorageSync('token')
+					header: {
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
 						console.log(res)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
-						} else if(res.data.status==1){
+						if (res.data.status == 1) {
 							this.productList = res.data.data.List
-						}else{
+
+						} else {
 							uni.showToast({
 								title: res.data.message,
 								icon: 'none'
 							})
 						}
-						
+
+					}
+				})
+				//获取公告
+				uni.request({
+					url: this.baseUrl + "/notice-list",
+					data: {
+						page: 1,
+						count: 10000
+					},
+					header: {
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res)
+						if (res.data.status == 1) {
+							this.noticeList = res.data.data
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: 'none'
+							})
+						}
+
 					}
 				})
 				//我的广告包
@@ -178,8 +252,8 @@
 						page: this.curPage,
 						count: 1
 					},
-					header:{
-						Authorization:uni.getStorageSync('token')
+					header: {
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
 						console.log(res)
@@ -188,7 +262,7 @@
 							this.total2 = res.data.data.Total
 							if (this.productList2.length == 0) {
 								this.loadingType = '';
-							} else if (this.productList2.length >=this.total2 ) {
+							} else if (this.productList2.length >= this.total2) {
 								this.loadingType = 'nomore';
 							} else {
 								this.loadingType = 'more';
@@ -209,7 +283,20 @@
 						}
 					}
 				})
-				
+
+			},
+			showStatus(status) {
+				if (status == 0) {
+					return '未报单'
+				} else if (status == 1) {
+					return '已报单'
+				} else if (status == 2) {
+					return '已出局'
+				} else if (status == 3) {
+					return '已放行'
+				} else if (status == 4) {
+					return '违约'
+				}
 			},
 			changeSwiper(e) {
 				this.swiperCurrent = e.detail.current;
@@ -221,22 +308,41 @@
 					this.active = 0
 				}
 			},
-			jumpToProductDetail(index){
-				console.log(this.productList[index].Id)
+			showLevelBgc(level) {
+				if (level == 1) {
+					return 'linear-gradient(#FF727C, #FFA8AE)'
+				} else if (level == 2) {
+					return 'linear-gradient(#7FCCFF, #0099FF)'
+				} else if (level == 3) {
+					return 'linear-gradient(#FFC744, #FF9100)'
+				}
+			},
+			jumpToProductDetail(index) {
 				//携带参数跳转到产品详情页
 				uni.navigateTo({
-					url:"./product-detail?id="+this.productList[index].Id
+					url: "./product-detail?id=" + this.productList[index].Id
 				})
 			},
-			seeAll(){
+			seeAll() {
 				uni.navigateTo({
-					url:"./profit"
+					url: "./myad"
 				})
 			},
-			myAdDetail(index){
+			myAdDetail(index) {
 				uni.navigateTo({
 					//携带参数跳转到详情页
-					url:"./detail?id="+this.productList2[index].Id
+					url: "./detail?id=" + this.productList2[index].Id
+				})
+			},
+			changeNoticeSwiper(e) {
+				// console.log('------------'+JSON.stringify(e))
+				this.noticeindex = e.detail.current
+			},
+			jumpToNoticeDetail() {
+				
+				// var noticeid = this.noticeList[this.noticeindex].Id
+				uni.navigateTo({
+					url: "./public-notification"
 				})
 			}
 
@@ -255,7 +361,7 @@
 
 		.percent {
 			margin-top: 20rpx;
-			font-size: 58rpx;
+			font-size: 50rpx;
 			color: #FF3400;
 			font-weight: bold;
 		}
@@ -335,15 +441,20 @@
 		}
 
 		.notice {
-			font-size: 26rpx;
-			margin-top: 30rpx;
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			justify-content: space-around;
+			margin: 0 auto;
+			width: 300rpx;
+			height: 50rpx;
+
+			// font-size: 26rpx;
+			// margin-top: 30rpx;
+			// display: flex;
+			// flex-direction: row;
+			// align-items: center;
+			// justify-content: space-around;
 
 			.icon2 {
-				font-size: 24rpx;
+				font-size: 36rpx;
+				margin-right: 20rpx;
 			}
 		}
 
@@ -352,17 +463,24 @@
 			font-weight: bold;
 			margin-top: 62rpx;
 			margin-bottom: 30rpx;
+			// display: flex;
+			// flex-direction: row;
+			// justify-content: space-between;
 		}
 
 		.recommend-product {
 			position: relative;
 			display: inline-block;
+
 			margin-top: 30rpx;
 			height: 262rpx;
-			width: 332rpx;
+			width: 320rpx;
 			box-shadow: 0 0 12rpx rgba(37, 144, 254, 0.1);
 			text-align: left;
 			line-height: 60rpx;
+			box-sizing: border-box;
+			padding: 5rpx;
+			margin-right: 24rpx;
 
 			.title {
 				padding-top: 30rpx;

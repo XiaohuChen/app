@@ -1,17 +1,16 @@
 <template>
 	<view class="content">
 		<view class="bgbox">
-		
 		</view>
 		<view class="recommend-product">
-			<view class="hot">
+			<view class="hot" :style="{background:showLevelBgc(level)}">
 				V{{level}}
 			</view>
 			<view class="title">
 				{{name}}
 			</view>
 			<view>
-				<text class="percent">{{ratio}}%</text><text class="font-gray">月利率</text>
+				<text class="percent">{{$base1._toFixed(ratio*30*100,2) }}%</text><text class="font-gray">月利率</text>
 			</view>
 			<view class="profit">
 				周期:10天
@@ -22,10 +21,10 @@
 		</view>
 		<view class="padding">
 			<view class="font-middle rule flex-between">
-				<text class="font-middle">合计金额</text><text class="font-gray">可用：{{balance}}STD</text>
+				<text class="font-middle">合计金额</text><text class="font-gray">可用：{{$base1._toFixed(balance,4) }}USDT</text>
 			</view>
 			<view class="">
-				<input class="input-num" type="text" value="10USDT" />
+				<input class="input-num" type="text" value="10.0000USDT" />
 			</view>
 			<view class="">
 				<view class="font-gray">
@@ -86,8 +85,8 @@
 				},
 				success: (res) => {
 					console.log(res)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
 						this.level = res.data.data.NeedLevel
 						this.name = res.data.data.Name
@@ -101,22 +100,22 @@
 					}
 				}
 			})
-			//账户余额
+			//单个币种余额
 			uni.request({
-				url: this.baseUrl + "/balance-list",
+				url: this.baseUrl + "/coin-single-balance",
 				data: {
-					page: 1,
-					count:1
+					Id:10
 				},
 				header: {
 					Authorization: uni.getStorageSync('token')
 				},
 				success: (res) => {
 					console.log(res)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
-						this.balance = res.data.data.Balance
+						this.balance = res.data.data.Money
+					
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -136,6 +135,15 @@
 			comfirmBook() {
 				this.showPinMask = true
 			},
+			showLevelBgc(level){
+				if(level==1){
+					return  'linear-gradient(#FF727C, #FFA8AE)'
+				}else if(level==2){
+					return  'linear-gradient(#7FCCFF, #0099FF)'
+				}else if(level==3){
+					return  'linear-gradient(#FFC744, #FF9100)'
+				}
+			},
 			confirm() {
 				//提交密码预约
 				uni.request({
@@ -150,8 +158,8 @@
 					},
 					success: (res) => {
 						console.log(res)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
+						if (this.$base1._indexOf(res.data.status)) {
+							this.$base1._isLogin()
 						} else if (res.data.status == 1) {
 							this.showPinMask = false
 							uni.showModal({
@@ -171,7 +179,7 @@
 							this.showPinMask = false
 							uni.showModal({
 								title: '预约失败',
-								content: '今日预约名额已满，无法进行预约',
+								content: res.data.message,
 								success: function(res) {
 									if (res.confirm) {
 										console.log('用户点击确定');
@@ -187,7 +195,7 @@
 			jumpToForgetPassword(){
 				this.showPinMask = false
 				uni.navigateTo({
-					url:"../login/forgetPassword"
+					url:"../personal/forget-pay-password"
 				})
 			}
 

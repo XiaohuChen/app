@@ -1,19 +1,14 @@
 <template>
 	<view class="content">
-		<view class="page-head2-padding">
-			<page-head2 :headerTitle="headerTitle"></page-head2>
-
-		</view>
 		<view class="bgbox">
-
 		</view>
 		<view class="padding">
 			<view class="flex-row padding-top">
 				<view class="name">
-					<image class="logo-img" src="../../../static/images/BTC@2x.png" mode=""></image>
+					<image class="logo-img" :src="logo" mode=""></image>
 				</view>
 				<view class="font-blue font-big font-bold">
-					{{money}}BTC
+					{{$base1._toFixed(money,4) }}{{name}}
 				</view>
 			</view>
 			<view class="flex-between padding-bottom">
@@ -22,7 +17,7 @@
 						冻结
 					</view>
 					<view class="font-bold font36">
-						{{forzen}}BTC
+						{{$base1._toFixed(forzen,4) }}{{name}}
 					</view>
 				</view>
 				<view class="">
@@ -30,20 +25,20 @@
 						折合CNY
 					</view>
 					<view class="font-bold font36">
-						{{price}}
+						{{$base1._toFixed(price,2)}}
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="bgbox">
 		</view>
-		<view class="nav padding">
+		<!-- <view class="nav padding">
 			<view class="nav-text" v-for="(item,index) in list" :key="item.id" :class="currentNumber == index ? 'active' : ''"
 			 @tap="currentInfo(index)">
 				{{item.title}}
 			</view>
-		</view>
-		<block v-if="showDetail">
+		</view> -->
+		<!-- <block v-if="showDetail">
 			<view class="padding">
 				<view class="">
 					简介
@@ -67,25 +62,25 @@
 					</view>
 				</view>
 				</view>
-		</block>
-		<block v-else>
+		</block> -->
+		<!-- <block v-else> -->
 			<view class="list">
 				<view class="list-item" v-for="(item,index) in nameList" :key="index" @tap="jumpToManage(index)">
 					<view class="">
 						<view class="name-en">
-							{{item.title}}
+							{{item.Type==1?"充值":"提现"}}
 						</view>
 						<view class="name-ch">
-							{{item.time}}
+							{{ $base1._formatDate(item.AddTime)}}
 						</view>
 					</view>
 					<view class="list-item-right">
 						<view class="">
 							<view class="name-en">
-								{{item.money}}
+								{{item.Money}}{{name}}
 							</view>
-							<view class="name-ch desc">
-								{{item.status}}
+							<view class="name-ch desc" :style="{color:showColor(item.Status)}">
+								{{showStatus(item.Status)}}
 							</view>
 						</view>
 						<view class="iconfont icon">
@@ -94,45 +89,35 @@
 					</view>
 				</view>
 			</view>
-
-
-
-		</block>
-		<view class="nav flot-bottom">
+		<!-- </block> -->
+	<!-- 	<view class="nav flot-bottom">
 			<view class="nav-text nav-btn" v-for="(item,index) in twoBtn" :key="item.id" :class="currentNumberBtn == index ? 'active-btn' : ''"
-			 @tap="currentInfo(index)">
+			 @tap="currentInfo2(index)">
 				{{item.title}}
 			</view>
-		</view>
+		</view> -->
 	</view>
 	</view>
 </template>
 
 <script>
-	import pageHead2 from '@/components/page-head2.vue';
 	export default {
-		components: {
-			pageHead2
-		},
+		
 		data() {
 			return {
 				currentNumber: 0, // 用来判断active样式类是否显示
 				currentNumberBtn: 0,
-				headerTitle: 'BTC',
 				statusChange: '',
 				curPage: 1,
 				status: 0,
-				nameList: [{
-					title: '充值',
-					time: '2019-09-10 14:30:15',
-					money: '+1000BTC',
-					status: '已完成'
-				}],
+				nameList: [],
 				id: '',
 				acid: '',
-				list: [{
-						title: "币种详情"
-					},
+				logo:'',
+				list: [
+					// {
+					// 	title: "币种详情"
+					// },
 					{
 						title: "充提记录"
 					}
@@ -184,14 +169,18 @@
 				forzen: '',
 				price: '',
 				coinId: '',
-				showDetail: true
+				showDetail: false,
+				name:''
 			};
 		},
-		onLoad(options) {
-			this.coinId = options.coinId
-			this.money = options.money
-			this.forzen = options.foezen
-			this.price = options.price
+		onLoad(options) {			
+			this.coinId = options.coinId;
+			this.money = options.money;
+			this.forzen = options.forzen;
+			this.price = options.price;
+			this.logo = options.logo;
+			this.name = options.Name;
+			//this.name = uni.getStorageSync('currencyName');
 			this.getCoreDetail()
 		},
 		onPullDownRefresh() {
@@ -205,7 +194,10 @@
 				this.currentNumber = index;
 				if(this.currentNumber == 1){
 					this.showDetail=false
+				}else{
+					this.showDetail=true
 				}
+				
 				//单个币种的充提记录
 				uni.request({
 					url: this.baseUrl + "/recharge-withdraw",
@@ -221,8 +213,9 @@
 					success: (res) => {
 						console.log(res)
 						 if (res.data.status == 1) {
-							// this.nameList = res.data.data.data
-							console.log(this.nameList)
+							this.nameList = res.data.data.list
+							console.log(JSON.stringify(this.nameList))
+	
 						} else {
 							uni.showToast({
 								title: res.data.message,
@@ -231,6 +224,50 @@
 						}
 					}
 				})
+			},
+			//处理状态返回的显示值
+			showStatus(status){
+				if(status){
+					if(status=="-1"){
+						return "驳回" 
+					}else if(status=="0"){
+						
+						return "待处理"
+					}else if(status=="1"){
+						
+						return "处理中"
+					}else if(status=="2"){
+						return "已处理"
+					}else if(status=="3"){
+						
+						return "失败"
+					}else if(status=="4"){
+						
+						return "处理成功"
+					}
+				}
+			},
+			//状态不同显示不同的颜色
+			showColor(status){
+				if(status){
+					if(status=="-1"){
+						return "red" 
+					}else if(status=="0"){
+						
+						return "green"
+					}else if(status=="1"){
+						
+						return "green"
+					}else if(status=="2"){
+						return "blue"
+					}else if(status=="3"){
+						
+						return "red"
+					}else if(status=="4"){
+						
+						return "blue"
+					}
+				}
 			},
 			currentBtnIndex(index) {
 				this.currentNumberBtn = index
@@ -248,11 +285,37 @@
 					},
 					success: (res) => {
 						console.log(res.data)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
+						if (this.$base1._indexOf(res.data.status)) {
+							this.$base1._isLogin()
 						} else if (res.data.status == 1) {
 
 
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
+					}
+				})
+				//单个币种的充提记录
+				uni.request({
+					url: this.baseUrl + "/recharge-withdraw",
+					data:{
+						page:1,
+						count:100000,
+						Id:this.coinId
+					},
+					header: {
+						//除注册登录外其他的请求都携带用户token和秘钥
+						Authorization: uni.getStorageSync('token')
+					},
+					success: (res) => {
+						console.log(res)
+						 if (res.data.status == 1) {
+							this.nameList = res.data.data.list
+							console.log(JSON.stringify(this.nameList))
+					
 						} else {
 							uni.showToast({
 								title: res.data.message,

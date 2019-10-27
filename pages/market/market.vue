@@ -2,9 +2,9 @@
 	<!-- 行情页面 -->
 	<view class="content">
 		<view class="flex-between">
-			<view class="nav-text" v-for="(item,index) in list" :key="item.id" :class="currentNumber == index ? 'active' : ''"
+			<view class="nav-text" v-for="(value,index) in list" :key="index" :class="currentNumber == index ? 'active' : ''"
 			 @tap="currentInfo(index)">
-				{{item.title}}
+				{{index}}
 			</view>
 		</view>
 		<view class="flex-between choice padding">
@@ -22,23 +22,23 @@
 			</view>
 		</view>
 		<view class="list">
-			<view class="list-item flex-between" >
+			<view class="list-item flex-between" v-for="item in Coinlist" :key="item.id">
 				<view class="list-item-left">
 					<view class="name-en">
-					<text class="font26">BTC</text>	 <text class="font-gray font20">/USTD</text>
+					<text class="font26">{{item.Coin}}</text>	 <text class="font-gray font20">{{item.PriceCoin}}</text>
 					</view>
 				</view>
 				<view class="list-item-right flex-between">
 					<view class="">
 						<view class="font26">
-							0.004423
+							{{$base1._toFixed(item.Price,4) }}
 						</view>
 						<view class="font-gray font20">
-							￥5.68
+							￥{{$base1._toFixed( item.Price*item.PriceCny,4)}}
 						</view>
 					</view>
 					<view class="">
-						<button class="show-btn font26">+4.56%</button>
+						<button :style="{background:showBackColor(item.Kline)}" class="show-btn font26">{{ $base1._toFixed(item.Kline,4) }}%</button>
 					</view>
 				</view>
 			</view>
@@ -53,94 +53,42 @@
 		data() {
 			return {
 				currentNumber: 0, // 用来判断active样式类是否显示
-				statusChange: '',
-				curPage: 1,
-				status: 0,
-				nameList: [],
-				id: '',
-				acid:'',
-				list: [{
-						title: "USDT"
-					},
-					{
-						title: "HUSD"
-					},
-					{
-						title: "BTC"
-					},
-					{
-						title: "ETH"
-					},
-					{
-						title: "HT"
-					},
-					{
-						title: "ALTS"
-					}
-				]
+				Coinlist:[],
+				list: []
 			};
 		},
 		onLoad(options) {
-			// if(!uni.getStorageSync("token")&&!uni.getStorageSync("SecretKey")){
-			// 	this.$base._isLogin()
-			// }
 			this.getCoreDetail()
 		},
 		onPullDownRefresh() {
 			this.getCoreDetail()
-			  setTimeout(function () {
-				  uni.stopPullDownRefresh();
-			  }, 1000);
-		  },
+			setTimeout(function () {
+				uni.stopPullDownRefresh();
+			}, 1000);
+			this.currentNumber = newArray[0];
+			
+		},
 		methods: {
 			currentInfo(index) {
+				this.Coinlist = this.list[index];
 				this.currentNumber = index;
 				console.log(this.currentNumber)
-				this.status = this.currentNumber
-				//行情动态 显示
-				uni.request({
-					url: this.baseUrl + "/investment-list?",
-					data:{
-						status:this.status
-					},
-					header: {
-						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
-					},
-					success: (res) => {
-						// console.log(res)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
-						} else if (res.data.status == 1) {
-							this.nameList = res.data.data.data
-							console.log(this.nameList)
-						} else {
-							uni.showToast({
-								title: res.data.message,
-								icon: "none"
-							})
-						}
-					}
-				})
 			},
-			//我的理财列表 显示全部
+			//币种行情
 			getCoreDetail() {
 				uni.request({
-					url: this.baseUrl + "/investment-list?status=" + this.status,
+					url: this.baseUrl + "/coin-kline",
 					header: {
 						//除注册登录外其他的请求都携带用户token和秘钥
-						Authorization: uni.getStorageSync('token'),
-						SecretKey: uni.getStorageSync('SecretKey')
+						Authorization: uni.getStorageSync('token')
 					},
 					success: (res) => {
-						
-						// console.log(res.data)
-						if (this.$base._indexOf(res.data.status)) {
-							this.$base._isLogin()
-						} else if (res.data.status == 1) {
-							this.nameList = res.data.data.data
-							
+						console.log(res)
+						 if (res.data.status == 1) {
+							this.list = res.data.data
+							var newArray = Object.keys(this.list);
+							this.Coinlist = res.data.data[newArray[0]];
+							this.currentNumber = newArray[0];
 						} else {
 							uni.showToast({
 								title: res.data.message,
@@ -150,25 +98,12 @@
 					}
 				})
 			},
-			showState(state){
-				if(state==1){
-					return  "待理财";
-				}else if(state==2){
-					return "理财中"
-				}else if(state==3){
-					return "已撤资"
-				}else if(state==4){
-					return "已完结"
+			showBackColor(value){
+				if(value<=0){
+					return '#EB4545'
+				}else if(value>0){
+					return '#38C262'
 				}
-			},
-			jumpToManage(index) {
-				this.id = this.nameList[index].Id
-				this.acid = this.nameList[index].ActivityId
-				console.log(this.id)//我的理财id
-				console.log(this.acid)//理财活动id
-				uni.navigateTo({
-					url: "./manage-in?id=" + this.id +"&acid="+this.acid//需要传一个investmentId过去,还需传一个acid过去获取天数
-				})
 			}
 		}
 	}
@@ -229,19 +164,6 @@
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	.active {
 		color: #007AFF;
 		border-bottom: 2rpx solid #007AFF;

@@ -11,7 +11,7 @@
 			</view>
 			<view class="">
 				<view class="font-big font-bold margin-top">
-					{{$base._toFixed(money,4) }}
+					{{$base1._toFixed(money,4) }}
 				</view>
 			</view>
 			<view class="flex-between margin-top padding">
@@ -31,7 +31,7 @@
 						提现
 					</view>
 				</view>
-				<view class="" @tap="jumpToRecord">
+				<view class="" @tap="jumpToMyBill">
 					<view class="iconfont font-bold font-big font-blue">
 						&#xe7e3;
 					</view>
@@ -45,11 +45,12 @@
 		<view class="bgbox">
 
 		</view>
-		<view class="font-bold flex title padding font-middle flex-between">
+		<view class="font-bold flex title padding font-middle flex-between" @tap="jumpToRecord">
 			<text class="font-bold">我的资产</text> <text class="iconfont">&#xea25;</text>
 		</view>
 		<view class="padding">
-			<view class="list-item border-bottom flex-between flex" @tap="jumpTocurrencyDetail(index)" v-for="(item,index) in coinList" :key="item.id">
+			<view class="list-item border-bottom flex-between flex" @tap="jumpTocurrencyDetail(index)" v-for="(item,index) in coinList"
+			 :key="item.id">
 				<view class="flex-row flex">
 					<view class="">
 						<image class="img" :src="item.Logo" mode=""></image>
@@ -59,7 +60,7 @@
 							{{item.EnName}}
 						</view>
 						<view class="">
-							{{item.Money}}
+							{{$base1._toFixed(item.Money,4) }}
 						</view>
 					</view>
 				</view>
@@ -69,7 +70,7 @@
 							冻结
 						</view>
 						<view class="">
-							{{item.Forzen}}
+							{{$base1._toFixed(item.Forzen,4)}}
 						</view>
 					</view>
 				</view>
@@ -79,29 +80,44 @@
 							折合(CNY)
 						</view>
 						<view class="">
-							{{item.Price}}
+							<!-- {{$base1._toFixed(item.Price,2)}} -->
+							{{getCNY(item.Price)}}
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
-
+		<evc-tabbar :tag="'wallet'" :fontColor2="fontColor2" :walletImg="walletImgSelect"></evc-tabbar>
 	</view>
 </template>
 
 <script>
+	import evcTabbar from '@/components/evcTabbar.vue'
 	export default {
+		components: {
+
+			evcTabbar
+		},
 		data() {
 			return {
+				fontColor2: '#0099FF',
+				walletImgSelect: '../../../static/images/evctabbar/walletselect.png',
 				money: '',
 				coinList: [],
 				balanceList: []
 			};
 		},
-
+		computed: {
+			getCNY() {
+				return function(price){
+					let t_price = price || 0;
+					return this.app._toFixed(this.app._accMul(t_price,7),4);
+				}
+			}
+		},
 		onLoad(options) {
-			console.log(uni.getStorageSync('token'))
-			//币种余额
+			
+			//总资产
 			uni.request({
 				url: this.baseUrl + "/total-balance",
 				header: {
@@ -109,10 +125,12 @@
 				},
 				success: (res) => {
 					console.log(res)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
 						this.money = res.data.data
+						
+						
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -132,6 +150,29 @@
 					console.log(res)
 					if (res.data.status == 1) {
 						this.coinList = res.data.data
+						console.log(JSON.stringify(this.coinList));
+						//获取币种余额
+						uni.request({
+							url: this.baseUrl + "/coin-balance",
+							header: {
+								Authorization: uni.getStorageSync('token')
+							},
+							success: (res) => {
+								console.log(res)
+								if (res.data.status == 1) {
+									this.balanceList = res.data.data
+									this.set_balance();
+								} else {
+									uni.showToast({
+										title: res.data.message,
+										icon: 'none'
+									})
+								}
+						
+							}
+						})
+						
+						
 					} else {
 						uni.showToast({
 							title: res.data.message,
@@ -141,26 +182,18 @@
 
 				}
 			})
-			//获取币种余额
-			uni.request({
-				url: this.baseUrl + "/coin-balance",
-				header: {
-					Authorization: uni.getStorageSync('token')
-				},
-				success: (res) => {
-					console.log(res)
-					if (res.data.status == 1) {
-						this.balanceList = res.data.data
-						this.set_balance();
-					} else {
-						uni.showToast({
-							title: res.data.message,
-							icon: 'none'
-						})
-					}
-
-				}
-			})
+		
+		},
+		onBackPress(options) {
+			var idtag=1
+			console.log(idtag)
+			if (idtag==1) {
+				console.log('222')
+				uni.switchTab({
+					url:"../../wallet/wallet"
+				})
+				return true;
+			}
 		},
 		methods: {
 			set_balance() {
@@ -170,32 +203,48 @@
 						if (self.coinList[i].Id == self.balanceList[j].CoinId) {
 							self.coinList[i].Money = self.balanceList[j].Money;
 							self.coinList[i].Forzen = self.balanceList[j].Forzen;
-							self.coinList[i].Price = self.balanceList[j].Money * self.coinList[i].Price;
+							self.coinList[i].Price = (parseFloat(self.balanceList[j].Money) + parseFloat(self.balanceList[j].Forzen)) * self.coinList[i].Price;
 						}
 					};
 				};
 				self.coinList = JSON.parse(JSON.stringify(self.coinList))
-				
+
 			},
-			jumpToTransferNum(){
+			jumpToRecord() {
 				uni.navigateTo({
-					url:"./transfer-num?money="+this.money
+					url: "./charging-record"
 				})
 			},
-			jumToQrcode(){
+			jumpToTransferNum() {
+				if(!this.money){
+					uni.showToast({
+						title:"您没有可用余额，不能进行提现操作"
+					})
+				}else{
+					uni.navigateTo({
+						url: "./transfer-num"
+					})
+				}
+			
+			},
+			jumToQrcode() {
 				uni.navigateTo({
-					url:"./receivables-qrcode"
+					url: "./receivables-qrcode"
 				})
 			},
-			jumpToRecord(){
+			jumpToMyBill() {
 				uni.navigateTo({
-					url:"./charging-record"
+					url: "../personal/my-bill"
 				})
 			},
-			jumpTocurrencyDetail(index){
+			jumpTocurrencyDetail(index) {
 				uni.navigateTo({
-					url:"./currency-detail?coinId="+this.coinList[index].Id+"&money="+this.coinList[index].Money+"&forzen="+this.coinList[index].Forzen+"&price="+this.coinList[index].Price
+					url: "./currency-detail?coinId=" + this.coinList[index].Id + "&money=" + this.coinList[index].Money + "&forzen=" +
+						this.coinList[index].Forzen + "&price=" +this.getCNY(this.coinList[index].Price)  + "&logo=" + this.coinList[index].Logo + "&Name=" + this.coinList[index].EnName
 				})
+				uni.setStorageSync('currencyName',this.coinList[index].EnName)
+				 
+
 			}
 
 		}

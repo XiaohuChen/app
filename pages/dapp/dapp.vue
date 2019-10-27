@@ -1,10 +1,10 @@
 <template>
 	<view class="content">
-		<view class="padding margin-top">
+		<view class="margin-top padding">
 			<!-- 轮播 -->
 			<swiper class="swiper" :autoplay="true" :interval="3000" :duration="1000" :current="swiperCurrent" @change="changeSwiper">
 				<swiper-item v-for="item in swiperImg" :key="item.id">
-					<image class="swiper-item" :src="item.Img" mode="widthFix"></image>
+					<image class="swiper-item" :src="domain + item.Img" mode="widthFix"></image>
 				</swiper-item>
 			</swiper>
 			<!-- 轮播指示点样式修改 -->
@@ -13,33 +13,42 @@
 					<view class="dot" :class="index==swiperCurrent ? ' active' : ''"></view>
 				</block>
 			</view>
-
 		</view>
-
-		<view class="notice" @tap="jumpToManageMoney(0)">
-			<text class="iconfont icon1">&#xe63f;</text>
-			sdfsdfsdsdfsdfsdfsddffsdfds哩哩啦啦即将上线！
-		</view>
+		
 		<view class="bgbox">
 
 		</view>
-		<view class="recommend flex-between padding">
-			<text>热门推荐</text> <text class="iconfont font-gray">&#xea25;</text>
+		
+		<!-- DAPP -->
+		<view>
+			
+			<web-view v-if="dappshow==1" :webview-styles="webviewStyles" src="https://dai.otcmaker.com/buy?locale=zh-CN&utm_source=evc"></web-view>
+			<web-view v-else-if="dappshow==2" :webview-styles="webviewStyles" src="https://www.tokensets.com/?locale=zh-CN&utm_source=evc"></web-view>
+			<web-view v-else-if="dappshow==3" :webview-styles="webviewStyles" src="https://www.hypersnakes.io/e/i/m/index.html?locale=zh-CN&utm_source=evc"></web-view>
+			<web-view v-else-if="dappshow==4" :webview-styles="webviewStyles" src="https://kyberswap.com/swap/eth_knc?ref=0xb9E29984Fe50602E7A619662EBED4F90D93824C7&locale=zh-CN&utm_source=imtoken"></web-view>
+			<web-view v-else-if="dappshow==5" :webview-styles="webviewStyles" src="https://cn.etherscan.com/address/0x76b7eD1068F1c85aB1D7c8615AB9e1BD3D4793EF?locale=zh-CN&utm_source=imtoken"></web-view>
+			
+		</view>
+		
+		
+		<view class="recommend flex-between">
+			<text>热门推荐</text>
 		</view>
 
 		<view class="flex-around">
-			<image class="logo-img" src="../../../static/images/pagesA/dapp/logo1.png" mode=""></image>
-			<image class="logo-img" src="../../../static/images/pagesA/dapp/logo2.png" mode=""></image>
-			<image class="logo-img" src="../../../static/images/pagesA/dapp/logo3.png" mode=""></image>
+			<image @tap="jumpToLogin" class="logo-img" src="../../static/images/pagesA/dapp/logo1.png" mode=""></image>
+			<image @tap="jumpToDapp(1)" class="logo-img" src="../../static/images/pagesA/dapp/dapp1.jpg" mode=""></image>
+			<image @tap="jumpToDapp(2)" class="logo-img" src="../../static/images/pagesA/dapp/dapp2.jpg" mode=""></image>
 		</view>
-		<view class="flex-around">
+		
+		<view class="flex-around" @tap="waiting">
 			<view class="logo-img-text text-center">
 				Aggregate ecology
 			</view>
-			<view class="logo-img-text text-center">
+			<view class="logo-img-text text-center"  @tap="waiting">
 				U钱包
 			</view>
-			<view class="logo-img-text text-center">
+			<view class="logo-img-text text-center"  @tap="waiting">
 				平安壹钱包
 			</view>
 		</view>
@@ -51,116 +60,43 @@
 			</view>
 		</view>
 		<view class="product-list ">
-			<view class="product-list-item ">
-				<view class="flex padding">
+			<view class="product-list-item " v-for="(item,index) in applist" :key="item.id">
+				<view class="flex padding" @tap="jumpToDapp(3+index)"> <!-- 前面有两个 -->
 					<view>
-						<image class="more-logo-img" src="../../../static/images/pagesA/dapp/logo3.png" mode=""></image>
+						<image class="more-logo-img" :src= "item.img" mode=""></image>
 					</view>
 					<view class="">
 						<view class="">
-							许多卡 Stocard
+							{{item.title}}
 						</view>
 						<view class="font-gray">
-							会员卡
+							{{item.desc}}
 						</view>
 					</view>
 				</view>
 			</view>
-			<view class="product-list-item ">
-				<view class="flex padding">
-					<view>
-						<image class="more-logo-img" src="../../../static/images/pagesA/dapp/logo3.png" mode=""></image>
-					</view>
-					<view class="">
-						<view class="">
-							许多卡 Stocard
-						</view>
-						<view class="font-gray">
-							会员卡
-						</view>
-					</view>
-				</view>
-			</view>
-			<view class="product-list-item ">
-				<view class="flex padding">
-					<view>
-						<image class="more-logo-img" src="../../../static/images/pagesA/dapp/logo3.png" mode=""></image>
-					</view>
-					<view class="">
-						<view class="">
-							许多卡 Stocard
-						</view>
-						<view class="font-gray">
-							会员卡
-						</view>
-					</view>
-				</view>
-			</view>
-			<view class="product-list-item ">
-				<view class="flex padding">
-					<view>
-						<image class="more-logo-img" src="../../../static/images/pagesA/dapp/logo3.png" mode=""></image>
-					</view>
-					<view class="">
-						<view class="">
-							许多卡 Stocard
-						</view>
-						<view class="font-gray">
-							会员卡
-						</view>
-					</view>
-				</view>
-			</view>
+			
 		</view>
 		<view class="choice-type padding">
 			<view class="choice-type1">实时资讯</view>
-			<view class="font-gray">
+			<!-- <view class="font-gray">
 				<text>查看更多</text><text class="iconfont icon">&#xea25;</text>
-			</view>
+			</view> -->
 		</view>
-		<view class="flex-between desc-box">
+		<view class="flex-between desc-box" v-for="(item,index) in newsList" :key="item.id" @tap="jumpToTextDetail(index)">
 			<view class="">
 				<view class="desc-text ">
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
+					{{item.Title}}
 				</view>
-				<view class="flex-between font-gray">
-					<text class="">36分钟前</text><text class="">25463阅读</text>
+				<view class="flex-between font-gray desc-num">
+					<view class="">{{$base1._formatDate(item.AddTime)}}</view>
+					<view class="">{{item.ReadNum}}阅读</view>
 				</view>
 			</view>
 			<view class="">
-				<image class="desc-img" src="../../../static/images/pagesA/dapp/desc1.png" mode=""></image>
+				<image class="desc-img" :src="domain + item.Imgs" mode=""></image>
 			</view>
 		</view>
-		<view class="flex-between desc-box">
-			<view class="">
-				<view class="desc-text ">
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
-				</view>
-				<view class="flex-between font-gray">
-					<text class="">36分钟前</text><text class="">25463阅读</text>
-				</view>
-			</view>
-			<view class="">
-				<image class="desc-img" src="../../../static/images/pagesA/dapp/desc1.png" mode=""></image>
-			</view>
-		</view>
-		<view class="flex-between desc-box">
-			<view class="">
-				<view class="desc-text ">
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
-					国泰国证食品饮料行业指数分级 2019年上半年度盈利
-				</view>
-				<view class="flex-between font-gray">
-					<text class="">36分钟前</text><text class="">25463阅读</text>
-				</view>
-			</view>
-			<view class="">
-				<image class="desc-img" src="../../../static/images/pagesA/dapp/desc1.png" mode=""></image>
-			</view>
-		</view>
-
 	</view>
 	</view>
 </template>
@@ -170,76 +106,59 @@
 		data() {
 			return {
 				hoverColor: '#4C70FF',
-				swiperImg: [{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					},
-					{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					},
-					{
-						Img: "../../../static/images/pagesA/login/banner.png"
-					}
-				],
+				swiperImg: [],
 				current: 0,
 				swiperCurrent: 0,
-				activity: [{
-						Title: '1',
-						MaxDay: '',
-						Remark: '2',
-						MaxRate: '3'
-					},
-					{
-						Title: '1',
-						MaxDay: '',
-						Remark: '2',
-						MaxRate: '3'
-					},
-					{
-						Title: '1',
-						MaxDay: '',
-						Remark: '2',
-						MaxRate: '3'
-					},
-					{
-						Title: '1',
-						MaxDay: '',
-						Remark: '2',
-						MaxRate: '3'
-					},
-					{
-						Title: '1',
-						MaxDay: '',
-						Remark: '2',
-						MaxRate: '3'
-					}
+				applist:[
+					{img:'../../static/images/pagesA/dapp/dapp3.jpg',title:'许多卡 Stocard',desc:'会员卡'},
+					{img:'../../static/images/pagesA/dapp/dapp4.jpg',title:'许多卡 Stocard',desc:'会员卡'},
+					{img:'../../static/images/pagesA/dapp/dapp5.jpg',title:'许多卡 Stocard',desc:'会员卡'}
 				],
-				activityId: '',
-				productList: [{
-						dayText: '产品一号',
-						Yield: '2',
-						IsDay: '产品一号',
-						NodeDay: '放行',
-						PenalSumRatio: '5'
-					},
-					{
-						dayText: '1',
-						Yield: '2',
-						IsDay: '3',
-						NodeDay: '4',
-						PenalSumRatio: '5'
-					},
-					{
-						dayText: '1',
-						Yield: '2',
-						IsDay: '3',
-						NodeDay: '4',
-						PenalSumRatio: '5'
-					}
-				]
+				newsList:[],
+				domain:'',
+				dappshow: 0,
+				webviewStyles: {progress:false}
 			};
 		},
 		onLoad() {
-
+			this.domain = uni.getStorageSync('domain')
+			//获取banner
+			uni.request({
+				url: this.baseUrl + "/banner-list",
+				success: (res) => {
+					console.log(res)
+					if (res.data.status == 1) {
+						this.swiperImg = res.data.data
+					} else {
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+				}
+			})
+		
+			//获取快讯列表
+			uni.request({
+				url: this.baseUrl + "/news-list",
+				data:{
+					page: 1,
+					count: 10000
+				},
+				success: (res) => {
+					console.log(res)
+					 if(res.data.status==1){
+						this.newsList = res.data.data.list
+						
+					}else{
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						})
+					}
+					
+				}
+			})
 		},
 		onNavigationBarButtonTap() {
 			console.log("22222")
@@ -248,7 +167,22 @@
 
 		},
 		methods: {
-
+			jumpToLogin(){
+				if(uni.getStorageSync('token')){
+					uni.navigateTo({
+						url:"../pagesB/index/index"
+					})
+				}else{
+					uni.navigateTo({
+						url:"../pagesB/login/login"
+					})
+				}
+				
+			},
+			jumpToDapp(n){				
+				this.dappshow = n;				
+			},
+			
 			changeSwiper(e) {
 				this.swiperCurrent = e.detail.current;
 			},
@@ -259,26 +193,40 @@
 					this.active = 0
 				}
 			},
-
+			waiting(){
+				uni.showToast({
+					title:"正在开发中...",
+					icon:'none'
+				})
+			},
+			jumpToTextDetail(index){
+				console.log(this.newsList[index].Id)
+				uni.navigateTo({
+					url:"./text-detail?id="+this.newsList[index].Id
+				})
+			}
 		}
 
 	}
 </script>
 
 <style lang="scss">
-	.content {
+	page{
 		background-color: #fff;
+	}
+	.content {
 		font-size: 24rpx;
 		color: #333;
-		height: 100%;
-
+		box-sizing: border-box;
+		width: 750rpx;
 		.percent {
 			margin-top: 20rpx;
 			font-size: 58rpx;
 			color: #FF3400;
 			font-weight: bold;
 		}
-
+		
+		
 		.percent-small {
 			font-size: 36rpx;
 		}
@@ -385,8 +333,11 @@
 			-webkit-box-orient: vertical;
 			margin-bottom: 30rpx;
 		}
+		.desc-num{
+			// width: 680rpx;
+		}
 		.desc-img{
-			width: 250rpx;
+			width: 160rpx;
 			height: 160rpx;
 		}
 

@@ -23,7 +23,7 @@
 		<view class="bgbox ">
 		</view>
 		<view class="box ">
-			<view class="name margin-top padding-top">
+			<view class="name margin-top padding-top text-overflow">
 				{{address}}
 			</view>
 			<view class="font-gray font20 ">
@@ -45,7 +45,6 @@
 	export default {
 		data() {
 			return {
-				
 				img: '', //二维码图片
 				address: '',
 				id: '',
@@ -64,8 +63,8 @@
 				},
 				success: (res) => {
 					console.log(res)
-					if (this.$base._indexOf(res.data.status)) {
-						this.$base._isLogin()
+					if (this.$base1._indexOf(res.data.status)) {
+						this.$base1._isLogin()
 					} else if (res.data.status == 1) {
 						this.coinList = res.data.data
 						var self = this
@@ -106,18 +105,18 @@
 					},
 					success: (res) => {
 						console.log('999999999999999')
-						// console.log(res.data)
-						//  if (res.data.status == 1) {
-						// 	this.address = res.data.data.WalletAddress
-						// 	this.img = QR.createQrCodeImg(this.address, {
-						// 		size: parseInt(300) //二维码大小  
-						// 	})
-						// } else {
-						// 	uni.showToast({
-						// 		title: res.data.message,
-						// 		icon: "none"
-						// 	})
-						// }
+						console.log(res.data)
+						 if (res.data.status == 1) {
+							this.address = res.data.data
+							this.img = QR.createQrCodeImg(this.address, {
+								size: parseInt(300) //二维码大小  
+							})
+						} else {
+							uni.showToast({
+								title: res.data.message,
+								icon: "none"
+							})
+						}
 					}
 				})
 			},
@@ -152,6 +151,9 @@
 
 		.name {
 			font-size: 32rpx;
+			width: 500rpx;
+			margin: 0 auto;
+			
 		}
 
 		.top {

@@ -1,5 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	
 		{
 			"path": "pages/wallet/wallet",
 			"style": {
@@ -18,7 +19,8 @@
 							"float": "right"
 						}]
 					}
-				}
+				},
+				"enablePullDownRefresh": true
 			}
 		},
 		{
@@ -80,18 +82,23 @@
 					"titleNView": {
 						"type": "transparent",
 						"titleColor": "#fff",
-						"backgroundColor": "#007AFF",
-						"buttons": [{
-							"text": "\ue645",
-							"fontSrc": "/static/font/iconfont.ttf",
-							"fontSize": "22px",
-							"float": "right",
-							"background": "rgba(0,0,0,0)"
-						}]
+						"backgroundColor": "#007AFF"
+						// "buttons": [{
+						// 	"text": "\ue645",
+						// 	"fontSrc": "/static/font/iconfont.ttf",
+						// 	"fontSize": "22px",
+						// 	"float": "right",
+						// 	"background": "rgba(0,0,0,0)"
+						// }]
 					}
 				}
 			}
 
+		},{
+			"path": "pages/user/about",
+			"style": {
+				"navigationBarTitleText": "关于我们"
+			}
 		},
 		{
 			"path": "pages/message/message",
@@ -127,7 +134,8 @@
 		{
 			"path": "pages/market/market",
 			"style": {
-				"navigationBarTitleText": "行情"
+				"navigationBarTitleText": "行情",
+				"enablePullDownRefresh": true
 			}
 		}, {
 			"path": "pages/dapp/dapp",
@@ -187,6 +195,12 @@
 			}
 		},
 		{
+			"path": "pages/pagesB/index/noticeDetail",
+			"style": {
+				"navigationBarTitleText": "公告详情"
+			}
+		},
+		{
 			"path": "pages/pagesB/login/forgetPassword",
 			"style": {
 				"navigationBarTitleText": "忘记密码"
@@ -206,6 +220,12 @@
 			}
 		},
 		{
+			"path": "pages/pagesB/index/myad",
+			"style": {
+				"navigationBarTitleText": "我的广告包"
+			}
+		},
+		{
 			"path": "pages/pagesB/index/profit",
 			"style": {
 				"navigationBarTitleText": "收益账户"
@@ -215,6 +235,19 @@
 			"path": "pages/pagesB/index/detail",
 			"style": {
 				"navigationBarTitleText": "详情"
+			}
+		},
+		{
+			"path": "pages/pagesB/index/public-notification",
+			"style": {
+				"navigationBarTitleText": "公告"
+				
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/invite",
+			"style": {
+				"navigationBarTitleText": "邀请好友"
 			}
 		},
 		{
@@ -259,39 +292,29 @@
 		{
 			"path": "pages/pagesB/wallet/record-details",
 			"style": {
-				"navigationBarTitleText": "记录详情",
-				"app-plus": {
-					"titleNView": false,
-					"animationType": "slide-in-bottom"
-				}
+				"navigationBarTitleText": "记录详情"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/wallet/currency-detail",
 			"style": {
 
-				"navigationBarTitleText": "币种详情",
-				"app-plus": {
-					"titleNView": false,
-					"animationType": "slide-in-bottom"
-				}
+				"navigationBarTitleText": "币种详情"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/wallet/recharge-record",
 			"style": {
 
-				"navigationBarTitleText": "充提记录",
-				"app-plus": {
-					"titleNView": false,
-					"animationType": "slide-in-bottom"
-				}
+				"navigationBarTitleText": "充提记录"
+				
 			}
 		},
 		{
 			"path": "pages/pagesB/my/my-team",
 			"style": {
-				"navigationBarTextStyle": "white",
 				"navigationBarTitleText": "我的团队",
 				"app-plus": {
 					"titleNView": {
@@ -310,28 +333,7 @@
 				}
 			}
 		},
-		{
-			"path": "pages/pagesB/my/my-team2",
-			"style": {
-				"navigationBarTextStyle": "white",
-				"navigationBarTitleText": "我的团队",
-				"app-plus": {
-					"titleNView": {
-						"type": "default",
-						"titleColor": "#333333",
-						"backgroundColor": "#fff",
-						"titleSize": "36rpx",
-						"buttons": [{
-								"text": "EVC",
-								"fontSrc": "/static/font/iconfont.ttf",
-								"fontSize": "13px",
-								"float": "left"
-							}
-						]
-					}
-				}
-			}
-		},
+		
 		{
 			"path": "pages/pagesB/personal/personal",
 			"style": {
@@ -351,7 +353,27 @@
 				}
 			}
 		},
-		
+		{
+			"path": "pages/pagesB/personal/examine",
+			"style": {
+				"navigationBarTitleText": ""
+			
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/aboutus",
+			"style": {
+				"navigationBarTitleText": "关于我们"
+			
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/userform",
+			"style": {
+				"navigationBarTitleText": "用户协议"
+			
+			}
+		},
 		{
 			"path": "pages/pagesB/personal/unsealing",
 			"style": {
@@ -384,6 +406,33 @@
 			"style": {
 				"navigationBarTitleText": "修改交易密码"
 				
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/forget-pay-password",
+			"style": {
+				"navigationBarTitleText": "忘记交易密码"
+			
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/binding-addr",
+			"style": {
+				"navigationBarTitleText": "绑定地址"
+			
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/answer",
+			"style": {
+				"navigationBarTitleText": "问题详情"
+			}
+		},
+		{
+			"path": "pages/pagesB/personal/hasBindingPhone",
+			"style": {
+				"navigationBarTitleText": ""
+			
 			}
 		},
 		{
@@ -425,6 +474,13 @@
 			}
 		},
 		{
+			"path": "pages/pagesB/personal/resetPayPassword",
+			"style": {
+				"navigationBarTitleText": "忘记交易密码"
+				
+			}
+		},
+		{
 			"path": "pages/pagesB/personal/binding-phone",
 			"style": {
 				"navigationBarTitleText": "绑定手机"
@@ -432,14 +488,7 @@
 			}
 		},
 		{
-			"path": "pages/pagesB/dapp/dapp",
-			"style": {
-				"navigationBarTitleText": "Dapp"
-			
-			}
-		},
-		{
-			"path": "pages/pagesB/dapp/text-detail",
+			"path": "pages/dapp/text-detail",
 			"style": {
 				"navigationBarTitleText": "正文详情"
 				
@@ -447,14 +496,14 @@
 		},
 
 		{
-			"path": "pages/pagesB/dapp/public-notification",
+			"path": "pages/dapp/public-notification",
 			"style": {
 				"navigationBarTitleText": "公告"
 				
 			}
 		},
 		{
-			"path": "pages/pagesB/dapp/public-detail",
+			"path": "pages/dapp/public-detail",
 			"style": {
 				"navigationBarTitleText": "详情"
 				
@@ -467,14 +516,46 @@
 			
 			}
 		}
-
-
-	],
+        ,{
+            "path" : "pages/forget/privatekey",
+            "style" : {
+				"navigationBarTitleText": "忘记密码"
+			}
+        },{
+            "path" : "pages/forget/pwd",
+            "style" : {
+				"navigationBarTitleText": "重置密码"
+			}
+        }
+        ,{
+            "path" : "pages/export/mnemonic",
+            "style" : {
+				"navigationBarTitleText": "导出助记词"
+			}
+        },{
+            "path" : "pages/export/privatekey",
+            "style" : {
+				"navigationBarTitleText": "导出私钥"
+			}
+        }
+        ,{
+            "path" : "pages/question/question",
+            "style" : {
+				"navigationBarTitleText": "常见问题"
+			}
+        }
+		,{
+		    "path" : "pages/question/answer",
+		    "style" : {
+				"navigationBarTitleText": "问题解答"
+			}
+		}
+    ],
 	"condition": { //模式配置，仅开发期间生效
 		"current": 0, //当前激活的模式（list 的索引项）
 		"list": [{
 			"name": "test", //模式名称
-			"path": "pages/pagesB/personal/personal" //启动页面，必选
+			"path": "pages/pagesB/login/register" //启动页面，必选
 		}]
 
 	},
